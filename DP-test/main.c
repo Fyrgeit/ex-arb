@@ -18,18 +18,34 @@ typedef struct Section
     short connector2;
 } Section;
 
-void DrawNode(Node *n)
+typedef struct DynamicSections
 {
-    if (CheckCollisionPointRec(GetMousePosition(), n->rec) && IsMouseButtonDown(MOUSE_BUTTON_LEFT))
+    Section *data;
+    short count;
+    short capacity;
+} DynamicSections;
+
+DynamicSections DynamicSectionsInit()
+{
+    DynamicSections arr;
+
+    arr.data = malloc(sizeof(Section));
+    arr.count = 0;
+    arr.capacity = 1;
+
+    return arr;
+}
+
+void DynamicSectionsAdd(DynamicSections *arr, Section section)
+{
+    if (arr->count == arr->capacity)
     {
-        n->rec.x += GetMouseDelta().x;
-        n->rec.y += GetMouseDelta().y;
+        arr->capacity *= 2;
+        arr->data = realloc(arr->data, sizeof(Section) * arr->capacity);
     }
-    
-    DrawCircle(n->rec.x, n->rec.y + n->rec.height / 2, 10, LIGHTGRAY);
-    DrawCircle(n->rec.x + n->rec.width, n->rec.y + n->rec.height / 2, 10, LIGHTGRAY);
-    
-    DrawRectangleRec(n->rec, DARKGRAY);
+
+    arr->data[arr->count] = section;
+    arr->count++;
 }
 
 Vector2 GetConnectorPos(Node n, short i)
@@ -45,13 +61,48 @@ Vector2 GetConnectorPos(Node n, short i)
     }
 }
 
+void DrawNode(Node *n)
+{
+    if (CheckCollisionPointRec(GetMousePosition(), n->rec) && IsMouseButtonDown(MOUSE_BUTTON_LEFT))
+    {
+        n->rec.x += GetMouseDelta().x;
+        n->rec.y += GetMouseDelta().y;
+    }
+
+    DrawCircle(n->rec.x, n->rec.y + n->rec.height / 2, 10, LIGHTGRAY);
+    DrawCircle(n->rec.x + n->rec.width, n->rec.y + n->rec.height / 2, 10, LIGHTGRAY);
+
+    DrawRectangleRec(n->rec, DARKGRAY);
+}
+
 void DrawSection(Section s)
 {
     DrawLineV(
         GetConnectorPos(*s.nodePtr1, s.connector1),
         GetConnectorPos(*s.nodePtr2, s.connector2),
-        LIGHTGRAY
-    );
+        LIGHTGRAY);
+}
+
+bool IsSectionValid(Section s, DynamicSections sections)
+{
+    if (s.nodePtr1 == s.nodePtr2)
+        return false;
+
+    for (short i = 0; i < sections.count; i++)
+    {
+        Section iSection = sections.data[i];
+
+        if (
+            (iSection.nodePtr1 == s.nodePtr1 && iSection.connector1 == s.connector1) ||
+            (iSection.nodePtr1 == s.nodePtr2 && iSection.connector1 == s.connector2) ||
+            (iSection.nodePtr2 == s.nodePtr1 && iSection.connector2 == s.connector1) ||
+            (iSection.nodePtr2 == s.nodePtr2 && iSection.connector2 == s.connector2))
+        {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 int main()
@@ -63,15 +114,71 @@ int main()
 
     Node nodes[] = {
         (Node){(Rectangle){100, 400, 60, 40}},
-        (Node){(Rectangle){400, 400, 60, 40}},
+        (Node){(Rectangle){300, 400, 60, 40}},
+        (Node){(Rectangle){500, 400, 60, 40}},
+        (Node){(Rectangle){700, 400, 60, 40}},
     };
 
-    Section sections[] = {
-        (Section){false, nodes, 1, nodes + 1, 0},
-    };
+    DynamicSections sections = DynamicSectionsInit();
+
+    bool creating = false;
+    Section newSection = (Section){false, NULL, -1, NULL, -1};
 
     while (!WindowShouldClose())
     {
+        if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
+        {
+            for (short i = 0; i < sizeof(nodes) / sizeof(Node); i++)
+            {
+                Node *n = nodes + i;
+
+                for (short connectorIndex = 0; connectorIndex < 2; connectorIndex++)
+                {
+                    bool additionalCondition = false;
+
+                    switch (connectorIndex)
+                    {
+                    case 0:
+                        additionalCondition = GetMouseX() < n->rec.x;
+                        break;
+                    case 1:
+                        additionalCondition = GetMouseX() > n->rec.x + n->rec.width;
+                        break;
+                    default:
+                        break;
+                    }
+
+                    if (Vector2Distance(GetMousePosition(), GetConnectorPos(*n, connectorIndex)) < 10 && additionalCondition)
+                    {
+                        if (!creating)
+                        {
+                            creating = true;
+                            newSection.nodePtr1 = n;
+                            newSection.connector1 = connectorIndex;
+                            break;
+                        }
+                        else
+                        {
+                            newSection.nodePtr2 = n;
+                            newSection.connector2 = connectorIndex;
+                            creating = false;
+
+                            if (IsSectionValid(newSection, sections))
+                            {
+                                DynamicSectionsAdd(&sections, newSection);
+                                break;
+                            }
+                            else
+                            {
+                                puts("Section invalid");
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         BeginDrawing();
         ClearBackground(BLACK);
 
@@ -80,11 +187,11 @@ int main()
             DrawNode(nodes + i);
         }
 
-        for (short i = 0; i < sizeof(sections) / sizeof(Section); i++)
+        for (short i = 0; i < sections.count; i++)
         {
-            DrawSection(sections[i]);
+            DrawSection(sections.data[i]);
         }
-        
+
         DrawText(TextFormat("FPS: %i", GetFPS()), 5, 5, 10, WHITE);
         EndDrawing();
     }
