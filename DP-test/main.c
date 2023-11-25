@@ -4,9 +4,16 @@
 #include "raylib.h"
 #include "raymath.h"
 
+typedef enum NodeType
+{
+    NORMAL,
+    SWITCH
+} NodeType;
+
 typedef struct Node
 {
     Rectangle rec;
+    NodeType type;
 } Node;
 
 typedef struct Section
@@ -50,12 +57,30 @@ void DynamicSectionsAdd(DynamicSections *arr, Section section)
 
 Vector2 GetConnectorPos(Node n, short i)
 {
-    switch (i)
+    switch (n.type)
     {
-    case 0:
-        return (Vector2){n.rec.x, n.rec.y + n.rec.height / 2};
-    case 1:
-        return (Vector2){n.rec.x + n.rec.width, n.rec.y + n.rec.height / 2};
+    case NORMAL:
+        switch (i)
+        {
+        case 0:
+            return (Vector2){n.rec.x, n.rec.y + n.rec.height / 2};
+        case 1:
+            return (Vector2){n.rec.x + n.rec.width, n.rec.y + n.rec.height / 2};
+        default:
+            return (Vector2){n.rec.x, n.rec.y};
+        }
+    case SWITCH:
+        switch (i)
+        {
+        case 0:
+            return (Vector2){n.rec.x, n.rec.y + n.rec.height / 2};
+        case 1:
+            return (Vector2){n.rec.x + n.rec.width, n.rec.y + 10};
+        case 2:
+            return (Vector2){n.rec.x + n.rec.width, n.rec.y + 30};
+        default:
+            return (Vector2){n.rec.x, n.rec.y};
+        }
     default:
         return (Vector2){n.rec.x, n.rec.y};
     }
@@ -69,8 +94,21 @@ void DrawNode(Node *n)
         n->rec.y += GetMouseDelta().y;
     }
 
-    DrawCircle(n->rec.x, n->rec.y + n->rec.height / 2, 10, LIGHTGRAY);
-    DrawCircle(n->rec.x + n->rec.width, n->rec.y + n->rec.height / 2, 10, LIGHTGRAY);
+    switch (n->type)
+    {
+    case NORMAL:
+        DrawCircle(n->rec.x, n->rec.y + n->rec.height / 2, 10, LIGHTGRAY);
+        DrawCircle(n->rec.x + n->rec.width, n->rec.y + n->rec.height / 2, 10, LIGHTGRAY);
+        break;
+
+    case SWITCH:
+        DrawCircle(n->rec.x, n->rec.y + n->rec.height / 2, 10, LIGHTGRAY);
+        DrawCircle(n->rec.x + n->rec.width, n->rec.y + 10, 10, LIGHTGRAY);
+        DrawCircle(n->rec.x + n->rec.width, n->rec.y + 30, 10, LIGHTGRAY);
+
+    default:
+        break;
+    }
 
     DrawRectangleRec(n->rec, DARKGRAY);
 }
@@ -113,10 +151,10 @@ int main()
     InitWindow(screenWidth, screenHeight, "DP-test");
 
     Node nodes[] = {
-        (Node){(Rectangle){100, 400, 60, 40}},
-        (Node){(Rectangle){300, 400, 60, 40}},
-        (Node){(Rectangle){500, 400, 60, 40}},
-        (Node){(Rectangle){700, 400, 60, 40}},
+        (Node){(Rectangle){100, 400, 60, 20}, NORMAL},
+        (Node){(Rectangle){300, 400, 60, 40}, SWITCH},
+        (Node){(Rectangle){500, 400, 60, 20}, NORMAL},
+        (Node){(Rectangle){700, 400, 60, 20}, NORMAL},
     };
 
     DynamicSections sections = DynamicSectionsInit();
@@ -126,58 +164,60 @@ int main()
 
     while (!WindowShouldClose())
     {
-        if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
-        {
-            for (short i = 0; i < sizeof(nodes) / sizeof(Node); i++)
+        if (IsKeyReleased(KEY_RIGHT))
+
+            if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
             {
-                Node *n = nodes + i;
-
-                for (short connectorIndex = 0; connectorIndex < 2; connectorIndex++)
+                for (short i = 0; i < sizeof(nodes) / sizeof(Node); i++)
                 {
-                    bool additionalCondition = false;
+                    Node *n = nodes + i;
 
-                    switch (connectorIndex)
+                    for (short connectorIndex = 0; connectorIndex < 2; connectorIndex++)
                     {
-                    case 0:
-                        additionalCondition = GetMouseX() < n->rec.x;
-                        break;
-                    case 1:
-                        additionalCondition = GetMouseX() > n->rec.x + n->rec.width;
-                        break;
-                    default:
-                        break;
-                    }
+                        bool additionalCondition = false;
 
-                    if (Vector2Distance(GetMousePosition(), GetConnectorPos(*n, connectorIndex)) < 10 && additionalCondition)
-                    {
-                        if (!creating)
+                        switch (connectorIndex)
                         {
-                            creating = true;
-                            newSection.nodePtr1 = n;
-                            newSection.connector1 = connectorIndex;
+                        case 0:
+                            additionalCondition = GetMouseX() < n->rec.x;
+                            break;
+                        case 1:
+                            additionalCondition = GetMouseX() > n->rec.x + n->rec.width;
+                            break;
+                        default:
                             break;
                         }
-                        else
-                        {
-                            newSection.nodePtr2 = n;
-                            newSection.connector2 = connectorIndex;
-                            creating = false;
 
-                            if (IsSectionValid(newSection, sections))
+                        if (Vector2Distance(GetMousePosition(), GetConnectorPos(*n, connectorIndex)) < 10 && additionalCondition)
+                        {
+                            if (!creating)
                             {
-                                DynamicSectionsAdd(&sections, newSection);
+                                creating = true;
+                                newSection.nodePtr1 = n;
+                                newSection.connector1 = connectorIndex;
                                 break;
                             }
                             else
                             {
-                                puts("Section invalid");
-                                break;
+                                newSection.nodePtr2 = n;
+                                newSection.connector2 = connectorIndex;
+                                creating = false;
+
+                                if (IsSectionValid(newSection, sections))
+                                {
+                                    DynamicSectionsAdd(&sections, newSection);
+                                    break;
+                                }
+                                else
+                                {
+                                    puts("Section invalid");
+                                    break;
+                                }
                             }
                         }
                     }
                 }
             }
-        }
 
         BeginDrawing();
         ClearBackground(BLACK);
