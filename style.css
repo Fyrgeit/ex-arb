@@ -13,26 +13,39 @@
     height: 72px;
     position: absolute;
     box-sizing: content-box;
-    /* border: dotted 1px black; */
+    border: dotted 1px lightgray;
 }
 
-svg line {
+svg .line {
     stroke: black;
     stroke-width: 2px;
+    stroke-linecap: round;
 }
 
-svg path {
+svg .switch-blob {
+    stroke: transparent;
+    fill: transparent;
+}
+
+svg .switch-blob:hover {
+    fill: black;
+}
+
+svg .signal {
     stroke: black;
-    stroke-width: 1px;
+    stroke-linecap: round;
+}
+
+svg .signal.red {
     fill: red;
 }
 
-svg path.green {
-    stroke: black;
-    stroke-width: 1px;
+svg .signal.green {
     fill: green;
 }
 
-button:hover {
+button:hover,
+svg .signal:hover,
+svg .switch-blob:hover {
     cursor: pointer;
 }

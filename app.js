@@ -70,17 +70,17 @@ const tiles = [
     { x: 0, y: 1, template: "eS", downSignal: "red", upSignal: "red" },
     { x: 0, y: 2, template: "eS", downSignal: "red", upSignal: "red" },
 
-    { x: 1, y: 1, template: "Sr+" },
+    { x: 1, y: 1, template: "S" },
     { x: 1, y: 2, template: "S" },
-
+    
     { x: 2, y: 1, template: "S" },
-    { x: 2, y: 2, template: "rS+" },
-
-    { x: 3, y: 1, template: "S" },
+    { x: 2, y: 2, template: "S" },
+    
+    { x: 3, y: 1, template: "Sr+" },
     { x: 3, y: 2, template: "Sl+" },
-
+    
     { x: 4, y: 1, template: "lS+" },
-    { x: 4, y: 2, template: "S" },
+    { x: 4, y: 2, template: "rS+" },
 
     { x: 5, y: 1, template: "Sl+" },
     { x: 5, y: 2, template: "S" },
@@ -95,23 +95,20 @@ const tiles = [
 
     { x: 8, y: 0, template: "S", upSignal: "red" },
     { x: 8, y: 1, template: "S", upSignal: "red" },
-    { x: 8, y: 2, template: "S", upSignal: "red" },
+    { x: 8, y: 2, template: "Sl", upSignal: "red" },
 
     { x: 9, y: 0, template: "Sr+" },
-    { x: 9, y: 1, template: "S" },
-    { x: 9, y: 2, template: "S" },
+    { x: 9, y: 1, template: "lS+" },
 
     { x: 10, y: 0, template: "Se", upSignal: "red", downSignal: "red" },
     { x: 10, y: 1, template: "rS+" },
-    { x: 10, y: 2, template: "Sl" },
 
-    { x: 11, y: 1, template: "lS+" },
-    { x: 12, y: 1, template: "S", downSignal: "red" },
-    { x: 13, y: 1, template: "S" },
-    { x: 14, y: 1, template: "Se", upSignal: "red", downSignal: "red" },
+    { x: 11, y: 1, template: "S", downSignal: "red" },
+    { x: 12, y: 1, template: "S" },
+    { x: 13, y: 1, template: "Se", upSignal: "red", downSignal: "red" },
 ];
 
-let playerPos = { x: 1, y: 2 };
+let playerPos = { x: 1, y: 1 };
 
 refresh();
 
@@ -129,6 +126,7 @@ function refresh() {
         templates[el.template].forEach(line => {
             const lineEl = document.createElementNS('http://www.w3.org/2000/svg', 'line');
             svgEl.append(lineEl);
+            lineEl.classList.add("line");
             lineEl.setAttribute("x1", line.x1);
             lineEl.setAttribute("y1", line.y1);
             lineEl.setAttribute("x2", line.x2);
@@ -138,27 +136,29 @@ function refresh() {
         if (el.upSignal) {
             const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
             svgEl.append(pathEl);
+            pathEl.classList.add("signal");
             pathEl.classList.add(el.upSignal);
             pathEl.setAttribute("d", "M8 8 L12 12 L8 16");
             pathEl.setAttribute("pos", el.x + ", " + el.y);
             pathEl.addEventListener("click", event => {
                 let pos = event.target.getAttribute("pos");
-
+                
                 let e = tiles.find(el => el.x == pos.split(", ")[0] && el.y == pos.split(", ")[1]);
-
+                
                 if (e.upSignal === "green") {
                     e.upSignal = "red";
                 } else {
                     e.upSignal = "green";
                 }
-
+                
                 refresh();
             });
         }
-
+        
         if (el.downSignal) {
             const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
             svgEl.append(pathEl);
+            pathEl.classList.add("signal");
             pathEl.classList.add(el.downSignal);
             pathEl.setAttribute("d", "M16 8 L12 12 L16 16");
             pathEl.setAttribute("pos", el.x + ", " + el.y);
@@ -180,6 +180,7 @@ function refresh() {
         if (el.template.includes("+") || el.template.includes("-")) {
             const switchEl = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             svgEl.append(switchEl);
+            switchEl.classList.add("switch-blob");
             switchEl.setAttribute("cx", "12");
             switchEl.setAttribute("cy", "12");
             switchEl.setAttribute("r", "3");
