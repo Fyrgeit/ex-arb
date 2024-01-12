@@ -1,11 +1,16 @@
 * {
     box-sizing: border-box;
+    font-family: sans-serif;
 }
 
 #canvas {
     border: 1px solid black;
     position: relative;
     box-sizing: content-box;
+}
+
+samp {
+    font-family: monospace;
 }
 
 svg .line {
@@ -17,7 +22,7 @@ svg .line {
 }
 
 svg .grid-line {
-    stroke: lightgray;
+    stroke: #f0f0f0;
     stroke-width: 0.5px;
 }
 
@@ -41,11 +46,16 @@ svg .signal {
 }
 
 svg .signal.red {
-    fill: red;
+    fill: #ff0000;
 }
 
 svg .signal.green {
-    fill: green;
+    fill: #00c000;
+}
+
+svg .rectangle {
+    fill: none;
+    stroke: red;
 }
 
 button:hover,

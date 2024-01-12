@@ -4,13 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grid based</title>
-    <script src="app.js" defer></script>
+    <script src="app.js" type="module"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <h1>Grid-baserad driftplats</h1>
+    
     <svg id="canvas"></svg>
-    <button onclick="move('down')"><</button>
-    <button onclick="move('up')">></button>
+
+    <p>Move train:</p>
+    <button id="bLeft">⇦</button>
+    <button id="bRight">⇨</button>
+    <form id="route-checker">
+        <p>Check route:</p>
+        <input type="number" id="from-signal" placeholder="From signal">
+        <input type="number" id="to-signal" placeholder="To signal">
+        <button type="submit">Check</button>
+        <button type="button" id="remove">Remove preview</button>
+    </form>
+    <samp id="output"></samp>
 </body>
 </html>
