@@ -9,19 +9,30 @@
 }
 
 svg .line {
+    fill: transparent;
     stroke: black;
     stroke-width: 2px;
     stroke-linecap: round;
-    fill: transparent;
+    stroke-linejoin:round;
+}
+
+svg .grid-line {
+    stroke: lightgray;
+    stroke-width: 0.5px;
 }
 
 svg .switch-blob {
-    stroke: transparent;
-    fill: transparent;
+    stroke: black;
+    fill: white;
 }
 
 svg .switch-blob:hover {
     fill: black;
+}
+
+svg .text {
+    font-size: 4px;
+    font-family: monospace;
 }
 
 svg .signal {
