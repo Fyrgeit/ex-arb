@@ -1,75 +1,32 @@
-const canvas = document.getElementById("canvas");
-
-const gridSize = 66;
+const gridSize = 20;
 
 const templates = {
-    "S": [
-        { x1: 1, y1: 12, x2: 23, y2: 12 }
-    ],
-    "lS": [
-        { x1: 1, y1: 23, x2: 12, y2: 12 },
-        { x1: 12, y1: 12, x2: 23, y2: 12 }
-    ],
-    "lS+": [
-        { x1: 1, y1: 12, x2: 23, y2: 12 },
-        { x1: 1, y1: 23, x2: 8, y2: 16 }
-    ],
-    "lS-": [
-        { x1: 1, y1: 12, x2: 6, y2: 12 },
-        { x1: 12, y1: 12, x2: 23, y2: 12 },
-        { x1: 1, y1: 23, x2: 12, y2: 12 }
-    ],
-    "rS": [
-        { x1: 1, y1: 1, x2: 12, y2: 12 },
-        { x1: 12, y1: 12, x2: 23, y2: 12 }
-    ],
-    "rS+": [
-        { x1: 1, y1: 12, x2: 23, y2: 12 },
-        { x1: 1, y1: 1, x2: 8, y2: 8 }
-    ],
-    "rS-": [
-        { x1: 1, y1: 12, x2: 6, y2: 12 },
-        { x1: 12, y1: 12, x2: 23, y2: 12 },
-        { x1: 1, y1: 1, x2: 12, y2: 12 }
-    ],
-    "Sr": [
-        { x1: 1, y1: 12, x2: 12, y2: 12 },
-        { x1: 12, y1: 12, x2: 23, y2: 23 }
-    ],
-    "Sr+": [
-        { x1: 1, y1: 12, x2: 23, y2: 12 },
-        { x1: 16, y1: 16, x2: 23, y2: 23 }
-    ],
-    "Sr-": [
-        { x1: 1, y1: 12, x2: 12, y2: 12 },
-        { x1: 18, y1: 12, x2: 23, y2: 12 },
-        { x1: 12, y1: 12, x2: 23, y2: 23 }
-    ],
-    "Sl": [
-        { x1: 1, y1: 12, x2: 12, y2: 12 },
-        { x1: 12, y1: 12, x2: 23, y2: 1 }
-    ],
-    "Sl+": [
-        { x1: 1, y1: 12, x2: 23, y2: 12 },
-        { x1: 16, y1: 8, x2: 23, y2: 1 }
-    ],
-    "Sl-": [
-        { x1: 1, y1: 12, x2: 12, y2: 12 },
-        { x1: 18, y1: 12, x2: 23, y2: 12 },
-        { x1: 12, y1: 12, x2: 23, y2: 1 }
-    ],
-    "Se": [
-        { x1: 1, y1: 12, x2: 12, y2: 12 },
-    ],
-    "eS": [
-        { x1: 12, y1: 12, x2: 23, y2: 12 },
-    ],
+    "S": "m0 10 l20 0",
+
+    "lS": "m0 20 l10 -10 l10 0",
+    "lS+": "m0 10 l20 0 m-15 5 l-5 5",
+    "lS-": "m0 20 l10 -10 l10 0 m-20 0 l3 0",
+
+    "rS": "l10 10 l10 0",
+    "rS+": "l5 5 m-5 5 l20 0",
+    "rS-": "l10 10 l10 0 m-20 0 l3 0",
+
+    "Sr": "m0 10 l10 0 l10 10",
+    "Sr+": "m0 10 l20 0 m-5 5 l5 5",
+    "Sr-": "m0 10 l10 0 l10 10 m-3 -10 l3 0",
+
+    "Sl": "m0 10 l10 0 l10 -10",
+    "Sl+": "m0 10 l20 0 m-5 -5 l5 -5",
+    "Sl-": "m0 10 l10 0 l10 -10 m0 10 l-3 0",
+    
+    "Se": "m0 10 l10 0",
+    "eS": "m10 10 l10 0",
 };
 
 const tiles = [
     { x: 0, y: 1, template: "eS", downSignal: "red", upSignal: "red" },
     { x: 0, y: 2, template: "eS", downSignal: "red", upSignal: "red" },
-
+    
     { x: 1, y: 1, template: "S" },
     { x: 1, y: 2, template: "S" },
     
@@ -81,32 +38,34 @@ const tiles = [
     
     { x: 4, y: 1, template: "lS+" },
     { x: 4, y: 2, template: "rS+" },
-
+    
     { x: 5, y: 1, template: "Sl+" },
     { x: 5, y: 2, template: "S" },
     
     { x: 6, y: 0, template: "lS", downSignal: "red" },
     { x: 6, y: 1, template: "S", downSignal: "red" },
     { x: 6, y: 2, template: "S", downSignal: "red" },
-
+    
     { x: 7, y: 0, template: "S" },
     { x: 7, y: 1, template: "S" },
     { x: 7, y: 2, template: "S" },
-
+    
     { x: 8, y: 0, template: "S", upSignal: "red" },
     { x: 8, y: 1, template: "S", upSignal: "red" },
     { x: 8, y: 2, template: "Sl", upSignal: "red" },
-
+    
     { x: 9, y: 0, template: "Sr+" },
     { x: 9, y: 1, template: "lS+" },
-
+    
     { x: 10, y: 0, template: "Se", upSignal: "red", downSignal: "red" },
     { x: 10, y: 1, template: "rS+" },
-
+    
     { x: 11, y: 1, template: "S", downSignal: "red" },
     { x: 12, y: 1, template: "S" },
     { x: 13, y: 1, template: "Se", upSignal: "red", downSignal: "red" },
 ];
+
+const canvas = document.getElementById("canvas");
 
 let playerPos = { x: 1, y: 1 };
 
@@ -114,31 +73,19 @@ refresh();
 
 function refresh() {
     canvas.innerHTML = "";
-
+    
     tiles.forEach((el) => {
-        const svgEl = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        canvas.append(svgEl);
-        svgEl.classList.add("tile");
-        svgEl.setAttribute('viewBox', '0 0 24 24');
-        svgEl.style.left = el.x * gridSize + "px";
-        svgEl.style.top = el.y * gridSize + "px";
-
-        templates[el.template].forEach(line => {
-            const lineEl = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-            svgEl.append(lineEl);
-            lineEl.classList.add("line");
-            lineEl.setAttribute("x1", line.x1);
-            lineEl.setAttribute("y1", line.y1);
-            lineEl.setAttribute("x2", line.x2);
-            lineEl.setAttribute("y2", line.y2);
-        });
+        const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        canvas.append(pathEl);
+        pathEl.classList.add("line");
+        pathEl.setAttribute("d", `M${el.x * gridSize} ${el.y * gridSize} ${templates[el.template]}`);
 
         if (el.upSignal) {
             const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            svgEl.append(pathEl);
+            canvas.append(pathEl);
             pathEl.classList.add("signal");
             pathEl.classList.add(el.upSignal);
-            pathEl.setAttribute("d", "M8 8 L12 12 L8 16");
+            pathEl.setAttribute("d", `M${el.x * gridSize} ${el.y * gridSize} m6 6 l4 4 l-4 4`);
             pathEl.setAttribute("pos", el.x + ", " + el.y);
             pathEl.addEventListener("click", event => {
                 let pos = event.target.getAttribute("pos");
@@ -157,10 +104,10 @@ function refresh() {
         
         if (el.downSignal) {
             const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            svgEl.append(pathEl);
+            canvas.append(pathEl);
             pathEl.classList.add("signal");
             pathEl.classList.add(el.downSignal);
-            pathEl.setAttribute("d", "M16 8 L12 12 L16 16");
+            pathEl.setAttribute("d", `M${el.x * gridSize} ${el.y * gridSize} m14 6 l-4 4 l4 4`);
             pathEl.setAttribute("pos", el.x + ", " + el.y);
             pathEl.addEventListener("click", event => {
                 let pos = event.target.getAttribute("pos");
@@ -179,10 +126,10 @@ function refresh() {
         
         if (el.template.includes("+") || el.template.includes("-")) {
             const switchEl = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-            svgEl.append(switchEl);
+            canvas.append(switchEl);
             switchEl.classList.add("switch-blob");
-            switchEl.setAttribute("cx", "12");
-            switchEl.setAttribute("cy", "12");
+            switchEl.setAttribute("cx", 10 + el.x * gridSize);
+            switchEl.setAttribute("cy", 10 + el.y * gridSize);
             switchEl.setAttribute("r", "3");
             switchEl.setAttribute("pos", el.x + ", " + el.y);
             switchEl.addEventListener("click", event => {
@@ -202,17 +149,20 @@ function refresh() {
 
         if (el.x == playerPos.x && el.y == playerPos.y) {
             const playerEl = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-            svgEl.append(playerEl);
-            playerEl.setAttribute("cx", "12");
-            playerEl.setAttribute("cy", "12");
+            canvas.append(playerEl);
+            playerEl.setAttribute("cx", 10 + el.x * gridSize);
+            playerEl.setAttribute("cy", 10 + el.y * gridSize);
             playerEl.setAttribute("r", "4");
             playerEl.setAttribute("fill", "red");
         }
 
     });
 
-    canvas.style.width = tiles.sort((a, b) => b.x - a.x)[0].x * gridSize + gridSize + 8 + "px";
-    canvas.style.height = tiles.sort((a, b) => b.y - a.y)[0].y * gridSize + gridSize + 8 + "px";
+    canvas.setAttribute("viewBox",
+        "0 0 " +     
+        (tiles.sort((a, b) => b.x - a.x)[0].x * gridSize + gridSize + 8) + " " +
+        (tiles.sort((a, b) => b.y - a.y)[0].y * gridSize + gridSize + 8)
+    );
 }
 
 function move(dir) {
