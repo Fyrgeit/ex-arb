@@ -1,6 +1,27 @@
-import { gridSize, templates, rails, signals, routes } from "./data.js";
+import data from "./data.json" assert {type: "json"};
+
+const templates = {
+    "S": "m0 10 l20 0",
+
+    "lS": "m0 20 l10 -10 l10 0",
+    "lS+": "m0 10 l20 0 m-15 5 l-5 5",
+    "lS-": "m0 20 l10 -10 l10 0 m-20 0 l3 0",
+
+    "rS": "l10 10 l10 0",
+    "rS+": "l5 5 m-5 5 l20 0",
+    "rS-": "l10 10 l10 0 m-20 0 l3 0",
+
+    "Sr": "m0 10 l10 0 l10 10",
+    "Sr+": "m0 10 l20 0 m-5 5 l5 5",
+    "Sr-": "m0 10 l10 0 l10 10 m-3 -10 l3 0",
+
+    "Sl": "m0 10 l10 0 l10 -10",
+    "Sl+": "m0 10 l20 0 m-5 -5 l5 -5",
+    "Sl-": "m0 10 l10 0 l10 -10 m0 10 l-3 0",
+};
 
 const canvas = document.getElementById("canvas");
+const gridSize = 20;
 
 let playerPos = { x: 1, y: 1 };
 
@@ -12,8 +33,8 @@ function refresh() {
     canvas.innerHTML = "";
 
     //Draw grid
-    const maxWidth = Math.max(...rails.concat(signals).map(o => o.x)) * gridSize + gridSize;
-    const maxHeight = Math.max(...rails.concat(signals).map(o => o.y)) * gridSize + gridSize;
+    const maxWidth = Math.max(...data.rails.concat(data.signals).map(o => o.x)) * gridSize + gridSize;
+    const maxHeight = Math.max(...data.rails.concat(data.signals).map(o => o.y)) * gridSize + gridSize;
 
     let xArr = [];
     let yArr = [];
@@ -32,7 +53,7 @@ function refresh() {
     pathEl.setAttribute("d", xArr.map(x => `M${x} 0 L${x} ${maxHeight}`).concat(yArr.map(y => `M0 ${y} L${maxWidth} ${y}`)).join(" "));
 
     //Draw rails
-    rails.forEach(railObj => {
+    data.rails.forEach(railObj => {
         const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
         canvas.append(pathEl);
         pathEl.classList.add("line");
@@ -70,7 +91,7 @@ function refresh() {
     });
 
     //Draw signals
-    signals.forEach((signalObj, index) => {
+    data.signals.forEach((signalObj, index) => {
         const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
         canvas.append(pathEl);
         pathEl.classList.add("signal");
@@ -110,12 +131,13 @@ function refresh() {
     });
 
     //Draw player
-    const playerEl = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    const playerEl = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
     canvas.append(playerEl);
-    playerEl.setAttribute("cx", 10 + playerPos.x * gridSize);
-    playerEl.setAttribute("cy", 10 + playerPos.y * gridSize);
-    playerEl.setAttribute("r", "4");
-    playerEl.setAttribute("fill", "red");
+    playerEl.classList.add("train");
+    playerEl.setAttribute("x", 4 + playerPos.x * gridSize);
+    playerEl.setAttribute("y", 7 + playerPos.y * gridSize);
+    playerEl.setAttribute("width", "12");
+    playerEl.setAttribute("height", "6");
 
 
     routeInfoRails.forEach(railPos => {
@@ -144,7 +166,7 @@ function move(dir) {
 
     let ogPlayerPos = { ...playerPos };
 
-    let fromTile = rails.find(t => t.x === playerPos.x && t.y === playerPos.y);
+    let fromTile = data.rails.find(t => t.x === playerPos.x && t.y === playerPos.y);
 
     switch (dir) {
         case "up":
@@ -180,7 +202,7 @@ function move(dir) {
         default: break;
     }
 
-    let toSignal = signals.find(s => s.x === playerPos.x && s.y === playerPos.y);
+    let toSignal = data.signals.find(s => s.x === playerPos.x && s.y === playerPos.y);
 
     if (toSignal) {
         switch (dir) {
@@ -225,16 +247,16 @@ document.getElementById("route-checker").addEventListener("submit", e => {
     if (
         from === "" ||
         from < 0 ||
-        from >= signals.length ||
+        from >= data.signals.length ||
         to === "" ||
         to < 0 ||
-        to >= signals.length
+        to >= data.signals.length
     ) {
         outputEl.innerText = "Invalid signals";
         return;
     }
     
-    let routeInfo = routes[from + " " + to];
+    let routeInfo = data.routes[from + " " + to];
     
     if (!routeInfo) {
         outputEl.innerText = "No such route exists";
