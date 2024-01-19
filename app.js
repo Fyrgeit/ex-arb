@@ -1,5 +1,7 @@
 import data from "./data.json" assert {type: "json"};
 
+data.switches = data.rails.filter(rail => rail.switchIndex).map(r => r.switchIndex);
+
 const templates = {
     "S": "m0 10 l20 0",
 
@@ -27,38 +29,37 @@ let playerPos = { x: 1, y: 1 };
 
 let routeInfoRails = [];
 
-refresh();
 
-function refresh() {
+const refresh = () => {
     canvas.innerHTML = "";
-
+    
     //Draw grid
     const maxWidth = Math.max(...data.rails.concat(data.signals).map(o => o.x)) * gridSize + gridSize;
     const maxHeight = Math.max(...data.rails.concat(data.signals).map(o => o.y)) * gridSize + gridSize;
-
+    
     let xArr = [];
     let yArr = [];
-
+    
     for (let x = gridSize; x < maxWidth; x += gridSize) {
         xArr.push(x);
     }
-
+    
     for (let y = gridSize; y < maxHeight; y += gridSize) {
         yArr.push(y);
     }
-
+    
     const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     canvas.append(pathEl);
     pathEl.classList.add("grid-line");
     pathEl.setAttribute("d", xArr.map(x => `M${x} 0 L${x} ${maxHeight}`).concat(yArr.map(y => `M0 ${y} L${maxWidth} ${y}`)).join(" "));
-
+    
     //Draw rails
     data.rails.forEach(railObj => {
         const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
         canvas.append(pathEl);
         pathEl.classList.add("line");
         pathEl.setAttribute("d", `M${railObj.x * gridSize} ${railObj.y * gridSize} ${templates[railObj.template]}`);
-
+        
         if (railObj.template.includes("+") || railObj.template.includes("-")) {
             const switchEl = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             canvas.append(switchEl);
@@ -72,24 +73,24 @@ function refresh() {
                 } else {
                     railObj.template = railObj.template.replace("-", "+")
                 }
-
+                
                 refresh();
             });
-
+            
             const textEl = document.createElementNS('http://www.w3.org/2000/svg', 'text');
             canvas.append(textEl);
             textEl.classList.add("text");
             textEl.innerHTML = railObj.switchIndex;
-
+            
             const typeOffset = {x: 10, y: 7};
-
+            
             typeOffset.x -= 1.2 * railObj.switchIndex.toString().length;
-
+            
             textEl.setAttribute("x", railObj.x * gridSize + typeOffset.x);
             textEl.setAttribute("y", railObj.y * gridSize + typeOffset.y);
         }
     });
-
+    
     //Draw signals
     data.signals.forEach((signalObj, index) => {
         const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
@@ -118,18 +119,18 @@ function refresh() {
         canvas.append(textEl);
         textEl.classList.add("text");
         textEl.innerHTML = index;
-
+        
         const typeOffset = {
             "up": {x: 4, y: 5},
             "down": {x: 16, y: 5},
         }[signalObj.type];
-
+        
         typeOffset.x -= 1.2 * index.toString().length;
-
+        
         textEl.setAttribute("x", signalObj.x * gridSize + typeOffset.x);
         textEl.setAttribute("y", signalObj.y * gridSize + typeOffset.y);
     });
-
+    
     //Draw player
     const playerEl = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
     canvas.append(playerEl);
@@ -138,8 +139,8 @@ function refresh() {
     playerEl.setAttribute("y", 7 + playerPos.y * gridSize);
     playerEl.setAttribute("width", "12");
     playerEl.setAttribute("height", "6");
-
-
+    
+    
     routeInfoRails.forEach(railPos => {
         const rectEl = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
         canvas.append(rectEl);
@@ -149,23 +150,50 @@ function refresh() {
         rectEl.setAttribute("width", gridSize);
         rectEl.setAttribute("height", gridSize);
     });
-
+    
     canvas.setAttribute("viewBox",
-        `0 0 ${maxWidth} ${maxHeight}`
+    `0 0 ${maxWidth} ${maxHeight}`
     );
-}
+};
 
 document.getElementById("bLeft").onclick = () => { move("down"); };
 document.getElementById("bRight").onclick = () => { move("up"); };
+
+const tableEl = document.querySelector("table");
+
+tableEl.innerHTML = `
+    <tr>
+        <th>Signals</th>
+        <th>${data.switches.join("</th><th>")}</th>
+    </tr>
+`;
+
+for (let routeKey in data.routes) {
+    const route = data.routes[routeKey];
+    const rowEl = document.createElement("tr");
+    tableEl.append(rowEl);
+    
+    let newArr = [];
+    data.switches.forEach(s => {
+        newArr.push(route.switchStates[s]);
+    });
+
+    rowEl.innerHTML = `
+        <td>${routeKey}</td>
+        <td>${newArr.join("</td><td>")}</td>
+    `;
+};
+
+refresh();
 
 function move(dir) {
     if (!["up", "down"].includes(dir)) {
         console.error("Invalid direction");
         return;
     }
-
+    
     let ogPlayerPos = { ...playerPos };
-
+    
     let fromTile = data.rails.find(t => t.x === playerPos.x && t.y === playerPos.y);
 
     switch (dir) {
