@@ -24,31 +24,36 @@
             "x": 3,
             "y": 1,
             "template": "Sr+",
-            "switchIndex": "A"
+            "switchIndex": "A",
+            "locked": false
         },
         {
             "x": 3,
             "y": 2,
             "template": "Sl+",
-            "switchIndex": "B"
+            "switchIndex": "B",
+            "locked": false
         },
         {
             "x": 4,
             "y": 1,
             "template": "lS+",
-            "switchIndex": "C"
+            "switchIndex": "C",
+            "locked": false
         },
         {
             "x": 4,
             "y": 2,
             "template": "rS+",
-            "switchIndex": "D"
+            "switchIndex": "D",
+            "locked": false
         },
         {
             "x": 5,
             "y": 1,
             "template": "Sl+",
-            "switchIndex": "E"
+            "switchIndex": "E",
+            "locked": false
         },
         {
             "x": 5,
@@ -94,7 +99,8 @@
             "x": 8,
             "y": 1,
             "template": "Sr+",
-            "switchIndex": "F"
+            "switchIndex": "F",
+            "locked": false
         },
         {
             "x": 8,
@@ -105,13 +111,15 @@
             "x": 9,
             "y": 1,
             "template": "rS+",
-            "switchIndex": "G"
+            "switchIndex": "G",
+            "locked": false
         },
         {
             "x": 9,
             "y": 2,
             "template": "rS+",
-            "switchIndex": "H"
+            "switchIndex": "H",
+            "locked": false
         },
         {
             "x": 10,

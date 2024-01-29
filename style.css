@@ -23,7 +23,7 @@ svg .line {
     stroke: black;
     stroke-width: 2px;
     stroke-linecap: round;
-    stroke-linejoin:round;
+    stroke-linejoin: round;
 }
 
 svg .grid-line {
@@ -40,6 +40,10 @@ svg .switch-blob:hover {
     fill: black;
 }
 
+svg .switch-blob.locked {
+    fill: gray;
+}
+
 svg .text {
     font-size: 4px;
     font-family: monospace;
@@ -48,6 +52,7 @@ svg .text {
 svg .signal {
     stroke: black;
     stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
 svg .signal.red {
@@ -72,4 +77,5 @@ svg .switch-blob:hover {
 td, th {
     border: 1px solid;
     padding: 2px;
+    text-align: center;
 }
