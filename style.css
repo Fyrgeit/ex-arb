@@ -31,16 +31,21 @@ svg .grid-line {
     stroke-width: 0.5px;
 }
 
-svg .switch-blob {
+svg .switch-blob:hover {
     stroke: black;
     fill: white;
 }
 
-svg .switch-blob:hover {
+svg .switch-blob {
     fill: black;
+    stroke: white;
 }
 
 svg .switch-blob.locked {
+    stroke: black;
+}
+
+svg .switch-blob.locked:hover {
     fill: gray;
 }
 

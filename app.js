@@ -2,6 +2,12 @@ import data from "./data.json" assert {type: "json"};
 
 data.switches = data.rails.filter(rail => rail.switchIndex);
 
+for (const key in data.routes) {
+    let route = data.routes[key];
+
+    route.put = false;
+}
+
 const templates = {
     "S": "m0 10 l20 0",
 
@@ -72,8 +78,8 @@ function refreshDisplay() {
             switchEl.classList.add("switch-blob");
             switchEl.setAttribute("cx", 10 + railObj.x * gridSize);
             switchEl.setAttribute("cy", 10 + railObj.y * gridSize);
-            switchEl.setAttribute("r", "2");
-            
+            switchEl.setAttribute("r", "1.5");
+
             switchEl.addEventListener("click", () => {
                 if (!railObj.locked) {
                     if (railObj.template.includes("+")) {
@@ -82,15 +88,6 @@ function refreshDisplay() {
                         railObj.template = railObj.template.replace("-", "+");
                     }
                 }
-
-                refreshDisplay();
-                refreshTable();
-            });
-
-            switchEl.addEventListener("contextmenu", (e) => {
-                e.preventDefault();
-
-                railObj.locked = !railObj.locked;
 
                 refreshDisplay();
                 refreshTable();
@@ -186,12 +183,14 @@ function refreshTable() {
         <tr>
             <th>Route</th>
             <th>${data.switches.map(s => s.switchIndex).join("</th><th>")}</th>
-            <th>OK</th>
+            <th>Switch</th>
+            <th>Conlict</th>
             <th>Put</th>
         </tr>
         <tr>
             <th>Locked</th>
             <th>${data.switches.map(s => s.locked ? "🔒" : "🆓").join("</th><th>")}</th>
+            <th></th>
             <th></th>
             <th></th>
         </tr>
@@ -200,8 +199,15 @@ function refreshTable() {
             <th>${data.switches.map(s => s.template.slice(-1)).join("</th><th>")}</th>
             <th></th>
             <th></th>
+            <th></th>
         </tr>
     `;
+
+    const obstructedRails = [].concat(
+        ...Object.values(data.routes)
+            .filter(route => route.put)
+            .map(route => route.usedRails)
+    );
 
     for (let routeKey in data.routes) {
         const route = data.routes[routeKey];
@@ -214,23 +220,55 @@ function refreshTable() {
             locked: s.locked,
         }));
 
+        const switchesCorrect = isSwitchesCorrect(columns);
+        const routeObstructed = isRouteObstructed(route, obstructedRails);
+
         rowEl.innerHTML = `
             <td>${routeKey}</td>
             <td>${columns.map(c => c.requestedSwitchState).join("</td><td>")}</td>
-            <td>${requestedSwitchesCorrect(columns) ? "✅" : "⛔️"}</td>
-            <td><input type="checkbox" /></td>
+            <td>${switchesCorrect ? "🟢" : "🔴"}</td>
+            <td>${routeObstructed ? "🔴" : "🟢"}</td>
         `;
+
+        const checkEl = document.createElement("input");
+        checkEl.setAttribute("type", "checkbox");
+        checkEl.setAttribute("id", routeKey);
+        checkEl.checked = route.put;
+
+        if (!switchesCorrect || routeObstructed) {
+            checkEl.setAttribute("disabled", "");
+        }
+
+        checkEl.onchange = (e) => {
+            for (const switchToLock in data.routes[e.target.id].switchStates) {
+                data.switches.find(s => s.switchIndex === switchToLock).locked = e.target.checked;
+            }
+
+            data.routes[e.target.id].put = e.target.checked;
+
+            refreshDisplay();
+            refreshTable();
+        };
+
+        const tdEl = document.createElement("td");
+        tdEl.append(checkEl);
+        rowEl.append(tdEl);
     };
 }
 
-function requestedSwitchesCorrect(columns) {
+function isRouteObstructed(route, obstructedRails) {
+    const obstructedRailStrings = obstructedRails.map(rail => JSON.stringify(rail));
+    const routeRailStrings = route.usedRails.map(rail => JSON.stringify(rail));
+
+    return obstructedRailStrings.some(railString => {
+        return routeRailStrings.includes(railString);
+    });
+}
+
+function isSwitchesCorrect(columns) {
     return columns.every(c => {
         if (c.requestedSwitchState == undefined) {
             return true;
-        }
-
-        if (!c.locked) {
-            return false;
         }
 
         return c.requestedSwitchState == c.currentSwitchState;
