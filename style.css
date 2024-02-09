@@ -46,7 +46,7 @@ svg .switch-blob.locked {
 }
 
 svg .switch-blob.locked:hover {
-    fill: gray;
+    fill: black;
 }
 
 svg .text {
@@ -79,8 +79,12 @@ svg .switch-blob:hover {
     cursor: pointer;
 }
 
+table {
+    border-collapse: collapse;
+}
+
 td, th {
-    border: 1px solid;
+    border: 1px solid #808080;
     padding: 2px;
     text-align: center;
 }

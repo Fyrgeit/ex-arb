@@ -179,27 +179,28 @@ function refreshDisplay() {
 function refreshTable() {
     const tableEl = document.querySelector("table");
 
+    const switchSymbols = { "+": "|", "-": "/" };
+
     tableEl.innerHTML = `
         <tr>
-            <th>Route</th>
+            <th rowspan="4">Route</th>
+            <th colspan="${data.switches.length + 1}">Switches</th>
+            <th colspan="3" rowspan="2">Control</th>
+        </tr>
+        <tr>
+            <th></th>
             <th>${data.switches.map(s => s.switchIndex).join("</th><th>")}</th>
-            <th>Switch</th>
-            <th>Conlict</th>
-            <th>Put</th>
         </tr>
         <tr>
             <th>Locked</th>
             <th>${data.switches.map(s => s.locked ? "🔒" : "🆓").join("</th><th>")}</th>
-            <th></th>
-            <th></th>
-            <th></th>
+            <th rowspan="2">Switch</th>
+            <th rowspan="2">Conflict</th>
+            <th rowspan="2">Put</th>
         </tr>
         <tr>
-            <th>Switch</th>
-            <th>${data.switches.map(s => s.template.slice(-1)).join("</th><th>")}</th>
-            <th></th>
-            <th></th>
-            <th></th>
+            <th>State</th>
+            <th>${data.switches.map(s => switchSymbols[s.template.slice(-1)]).join("</th><th>")}</th>
         </tr>
     `;
 
@@ -209,8 +210,7 @@ function refreshTable() {
             .map(route => route.usedRails)
     );
 
-    for (let routeKey in data.routes) {
-        const route = data.routes[routeKey];
+    data.routes.forEach((route, routeIndex) => {
         const rowEl = document.createElement("tr");
         tableEl.append(rowEl);
 
@@ -224,15 +224,16 @@ function refreshTable() {
         const routeObstructed = isRouteObstructed(route, obstructedRails);
 
         rowEl.innerHTML = `
-            <td>${routeKey}</td>
-            <td>${columns.map(c => c.requestedSwitchState).join("</td><td>")}</td>
+            <td>${route.upSignals + " / " + route.downSignals}</td>
+            <td></td>
+            <td>${columns.map(c => switchSymbols[c.requestedSwitchState]).join("</td><td>")}</td>
             <td>${switchesCorrect ? "🟢" : "🔴"}</td>
             <td>${routeObstructed ? "🔴" : "🟢"}</td>
         `;
 
         const checkEl = document.createElement("input");
         checkEl.setAttribute("type", "checkbox");
-        checkEl.setAttribute("id", routeKey);
+        checkEl.setAttribute("id", routeIndex);
         checkEl.checked = route.put;
 
         if (!switchesCorrect || routeObstructed) {
@@ -253,7 +254,7 @@ function refreshTable() {
         const tdEl = document.createElement("td");
         tdEl.append(checkEl);
         rowEl.append(tdEl);
-    };
+    });
 }
 
 function isRouteObstructed(route, obstructedRails) {

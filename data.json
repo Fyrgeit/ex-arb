@@ -238,8 +238,10 @@
             "state": "red"
         }
     ],
-    "routes": {
-        "2 7": {
+    "routes": [
+        {
+            "upSignals": "2 7", 
+            "downSignals": "4 0", 
             "usedRails": [
                 {
                     "x": 2,
@@ -272,7 +274,9 @@
                 "E": "-"
             }
         },
-        "2 8": {
+        {
+            "upSignals": "2 8",
+            "downSignals": "5 0",
             "usedRails": [
                 {
                     "x": 2,
@@ -305,7 +309,9 @@
                 "E": "+"
             }
         },
-        "2 9": {
+        {
+            "upSignals": "2 9",
+            "downSignals": "6 0",
             "usedRails": [
                 {
                     "x": 2,
@@ -341,7 +347,9 @@
                 "D": "-"
             }
         },
-        "3 7": {
+        {
+            "upSignals": "3 7",
+            "downSignals": "4 1",
             "usedRails": [
                 {
                     "x": 2,
@@ -378,7 +386,9 @@
                 "E": "-"
             }
         },
-        "3 8": {
+        {
+            "upSignals": "3 8",
+            "downSignals": "5 1",
             "usedRails": [
                 {
                     "x": 2,
@@ -415,7 +425,9 @@
                 "E": "+"
             }
         },
-        "3 9": {
+        {
+            "upSignals": "3 9",
+            "downSignals": "6 1",
             "usedRails": [
                 {
                     "x": 2,
@@ -447,7 +459,9 @@
                 "D": "+"
             }
         },
-        "7 12": {
+        {
+            "upSignals": "7 12",
+            "downSignals": "10 4",
             "usedRails": [
                 {
                     "x": 8,
@@ -474,7 +488,9 @@
                 "G": "-"
             }
         },
-        "8 12": {
+        {
+            "upSignals": "8 12",
+            "downSignals": "10 5",
             "usedRails": [
                 {
                     "x": 8,
@@ -502,7 +518,9 @@
                 "G": "+"
             }
         },
-        "8 13": {
+        {
+            "upSignals": "8 13",
+            "downSignals": "11 5",
             "usedRails": [
                 {
                     "x": 8,
@@ -530,7 +548,9 @@
                 "H": "-"
             }
         },
-        "9 13": {
+        {
+            "upSignals": "9 13",
+            "downSignals": "11 6",
             "usedRails": [
                 {
                     "x": 8,
@@ -557,5 +577,5 @@
                 "H": "+"
             }
         }
-    }
+    ]
 }
