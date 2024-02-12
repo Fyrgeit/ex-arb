@@ -31,7 +31,14 @@ const templates = {
 const canvas = document.getElementById("canvas");
 const gridSize = 20;
 
-let playerPos = { x: 1, y: 1 };
+let trains = [
+    {
+        pos: { x: 1, y: 1 },
+    },
+    {
+        pos: { x: 12, y: 1 },
+    },
+];
 
 let routeInfoRails = [];
 
@@ -151,14 +158,16 @@ function refreshDisplay() {
         textEl.setAttribute("y", signalObj.y * gridSize + typeOffset.y);
     });
 
-    //Draw player
-    const playerEl = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    canvas.append(playerEl);
-    playerEl.classList.add("train");
-    playerEl.setAttribute("x", 4 + playerPos.x * gridSize);
-    playerEl.setAttribute("y", 7 + playerPos.y * gridSize);
-    playerEl.setAttribute("width", "12");
-    playerEl.setAttribute("height", "6");
+    //Draw trains
+    trains.forEach(train => {
+        const trainEl = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        canvas.append(trainEl);
+        trainEl.classList.add("train");
+        trainEl.setAttribute("x", 4 + train.pos.x * gridSize);
+        trainEl.setAttribute("y", 7 + train.pos.y * gridSize);
+        trainEl.setAttribute("width", "12");
+        trainEl.setAttribute("height", "6");
+    });
 
     //Display route
     routeInfoRails.forEach(railPos => {
