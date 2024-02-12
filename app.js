@@ -1,4 +1,5 @@
 import data from "./data.json" assert {type: "json"};
+import templates from "./templates.json" assert {type: "json"};
 
 data.switches = data.rails.filter(rail => rail.switchIndex);
 
@@ -7,26 +8,6 @@ for (const key in data.routes) {
 
     route.put = false;
 }
-
-const templates = {
-    "S": "m0 10 l20 0",
-
-    "lS": "m0 20 l10 -10 l10 0",
-    "lS+": "m0 10 l20 0 m-15 5 l-5 5",
-    "lS-": "m0 20 l10 -10 l10 0 m-20 0 l3 0",
-
-    "rS": "l10 10 l10 0",
-    "rS+": "l5 5 m-5 5 l20 0",
-    "rS-": "l10 10 l10 0 m-20 0 l3 0",
-
-    "Sr": "m0 10 l10 0 l10 10",
-    "Sr+": "m0 10 l20 0 m-5 5 l5 5",
-    "Sr-": "m0 10 l10 0 l10 10 m-3 -10 l3 0",
-
-    "Sl": "m0 10 l10 0 l10 -10",
-    "Sl+": "m0 10 l20 0 m-5 -5 l5 -5",
-    "Sl-": "m0 10 l10 0 l10 -10 m0 10 l-3 0",
-};
 
 const canvas = document.getElementById("canvas");
 const gridSize = 20;
