@@ -20,23 +20,29 @@ refreshTemplates();
 refreshDisplay();
 
 function setRail(pos, template) {
-    let railObj = {
-        x: pos.x,
-        y: pos.y,
-        template: template
-    };
-
-    if (template.includes("+") || template.includes("-")) {
-        railObj.switchIndex = "X";
-        railObj.locked = false;
-    }
-
     let existingRailIndex = data.rails.findIndex(r => r.x === pos.x && r.y === pos.y);
 
-    if (existingRailIndex >= 0) {
-        data.rails[existingRailIndex] = railObj;
+    if (template === "empty") {
+        if (existingRailIndex >= 0) {
+            data.rails.splice(existingRailIndex, 1);
+        }
     } else {
-        data.rails.push(railObj);
+        let railObj = {
+            x: pos.x,
+            y: pos.y,
+            template: template
+        };
+        
+        if (template.includes("+") || template.includes("-")) {
+            railObj.switchIndex = "X";
+            railObj.locked = false;
+        }
+        
+        if (existingRailIndex >= 0) {
+            data.rails[existingRailIndex] = railObj;
+        } else {
+            data.rails.push(railObj);
+        }
     }
 }
 
