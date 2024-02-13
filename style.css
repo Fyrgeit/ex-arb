@@ -5,12 +5,28 @@
 
 #canvas {
     border: 1px solid black;
-    position: relative;
-    box-sizing: content-box;
+}
+
+form p {
+    display: flex;
+    margin: 0;
+    gap: 5px;
+}
+
+input[type="radio"] {
+    margin: 0;
+}
+
+.template {
+    border: 1px solid #808080;
 }
 
 samp {
     font-family: monospace;
+}
+
+svg {
+    box-sizing: content-box;
 }
 
 svg .train {
