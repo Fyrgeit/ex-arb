@@ -16,8 +16,23 @@ canvas.addEventListener("click", (e) => {
     refreshDisplay();
 })
 
+document.querySelector("button").addEventListener("click", downloadRails);
+
 refreshTemplates();
 refreshDisplay();
+
+function downloadRails() {
+    const filename = 'data.json';
+    const jsonStr = JSON.stringify(data);
+    
+    let element = document.createElement('a');
+    element.innerHTML = "Download";
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(jsonStr));
+    element.setAttribute('download', filename);
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+}
 
 function setRail(pos, template) {
     let existingRailIndex = data.rails.findIndex(r => r.x === pos.x && r.y === pos.y);

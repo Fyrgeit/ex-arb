@@ -58,7 +58,9 @@
         {
             "x": 5,
             "y": 2,
-            "template": "S"
+            "template": "Sr+",
+            "switchIndex": "F",
+            "locked": false
         },
         {
             "x": 6,
@@ -99,7 +101,7 @@
             "x": 8,
             "y": 1,
             "template": "Sr+",
-            "switchIndex": "F",
+            "switchIndex": "G",
             "locked": false
         },
         {
@@ -111,14 +113,14 @@
             "x": 9,
             "y": 1,
             "template": "rS+",
-            "switchIndex": "G",
+            "switchIndex": "H",
             "locked": false
         },
         {
             "x": 9,
             "y": 2,
             "template": "rS+",
-            "switchIndex": "H",
+            "switchIndex": "I",
             "locked": false
         },
         {
@@ -139,7 +141,9 @@
         {
             "x": 11,
             "y": 3,
-            "template": "rS"
+            "template": "rS-",
+            "switchIndex": "J",
+            "locked": false
         },
         {
             "x": 12,
@@ -148,6 +152,31 @@
         },
         {
             "x": 12,
+            "y": 3,
+            "template": "S"
+        },
+        {
+            "x": 6,
+            "y": 3,
+            "template": "rS"
+        },
+        {
+            "x": 8,
+            "y": 3,
+            "template": "S"
+        },
+        {
+            "x": 7,
+            "y": 3,
+            "template": "S"
+        },
+        {
+            "x": 9,
+            "y": 3,
+            "template": "S"
+        },
+        {
+            "x": 10,
             "y": 3,
             "template": "S"
         }
@@ -196,6 +225,12 @@
             "state": "red"
         },
         {
+            "x": 6,
+            "y": 3,
+            "type": "down",
+            "state": "red"
+        },
+        {
             "x": 8,
             "y": 0,
             "type": "up",
@@ -210,6 +245,12 @@
         {
             "x": 8,
             "y": 2,
+            "type": "up",
+            "state": "red"
+        },
+        {
+            "x": 8,
+            "y": 3,
             "type": "up",
             "state": "red"
         },
@@ -240,8 +281,8 @@
     ],
     "routes": [
         {
-            "upSignals": "2 7", 
-            "downSignals": "4 0", 
+            "upSignals": "2 7",
+            "downSignals": "4 0",
             "usedRails": [
                 {
                     "x": 2,
