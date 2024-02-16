@@ -15,11 +15,15 @@ const gridSize = 20;
 let trains = [
     {
         pos: { x: 1, y: 1 },
+        selected: false
     },
     {
         pos: { x: 12, y: 1 },
+        selected: false
     },
 ];
+
+let selectedTrainIndex = -1;
 
 let routeInfoRails = [];
 
@@ -140,14 +144,30 @@ function refreshDisplay() {
     });
 
     //Draw trains
-    trains.forEach(train => {
+    trains.forEach((train, index) => {
         const trainEl = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
         canvas.append(trainEl);
         trainEl.classList.add("train");
+        if (train.selected) trainEl.classList.add("selected");
+        trainEl.setAttribute("trainIndex", index);
         trainEl.setAttribute("x", 4 + train.pos.x * gridSize);
         trainEl.setAttribute("y", 7 + train.pos.y * gridSize);
         trainEl.setAttribute("width", "12");
         trainEl.setAttribute("height", "6");
+        trainEl.addEventListener("click", (e) => {
+            if (selectedTrainIndex == e.target.attributes.trainIndex.value) {
+                selectedTrainIndex = -1;
+                train.selected = false;
+            } else {
+                if (selectedTrainIndex != -1) {
+                    trains[selectedTrainIndex].selected = false;
+                }
+                selectedTrainIndex = e.target.attributes.trainIndex.value;
+                train.selected = true;
+            }
+
+            refreshDisplay();
+        });
     });
 
     //Display route
@@ -226,16 +246,24 @@ function refreshTable() {
         checkEl.setAttribute("id", routeIndex);
         checkEl.checked = route.put;
 
-        if (!switchesCorrect || routeObstructed) {
+        if (!switchesCorrect || routeObstructed && !route.put) {
             checkEl.setAttribute("disabled", "");
         }
 
+        //When checkbox is checked or unchecked
         checkEl.onchange = (e) => {
+            //Lock all switches
             for (const switchToLock in data.routes[e.target.id].switchStates) {
                 data.switches.find(s => s.switchIndex === switchToLock).locked = e.target.checked;
             }
 
+            //Set put value
             data.routes[e.target.id].put = e.target.checked;
+
+            //If putting route
+            if (e.target.checked) {
+                data.signals[data.routes[e.target.id].upSignals.split(" ")[0]].state = "green";
+            }
 
             refreshDisplay();
             refreshTable();
@@ -267,6 +295,8 @@ function isSwitchesCorrect(columns) {
 }
 
 function movePlayer(dir) {
+    let playerPos = trains[selectedTrainIndex].pos;
+
     if (!["up", "down"].includes(dir)) {
         console.error("Invalid direction");
         return;
@@ -335,6 +365,8 @@ function movePlayer(dir) {
             default: break;
         }
     }
+
+    trains[selectedTrainIndex].pos = playerPos;
 
     refreshDisplay();
 }

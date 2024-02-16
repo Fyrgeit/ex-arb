@@ -31,6 +31,11 @@ svg {
 
 svg .train {
     stroke: black;
+    fill: white;
+}
+
+svg .train.selected {
+    stroke: black;
     fill: red;
 }
 
