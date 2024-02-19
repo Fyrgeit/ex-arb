@@ -281,7 +281,7 @@
     ],
     "routes": [
         {
-            "upSignals": "2 7",
+            "upSignals": "2 8",
             "downSignals": "4 0",
             "usedRails": [
                 {
@@ -316,7 +316,7 @@
             }
         },
         {
-            "upSignals": "2 8",
+            "upSignals": "2 9",
             "downSignals": "5 0",
             "usedRails": [
                 {
@@ -351,7 +351,7 @@
             }
         },
         {
-            "upSignals": "2 9",
+            "upSignals": "2 10",
             "downSignals": "6 0",
             "usedRails": [
                 {
@@ -385,11 +385,51 @@
             ],
             "switchStates": {
                 "A": "-",
-                "D": "-"
+                "D": "-",
+                "F": "+"
             }
         },
         {
-            "upSignals": "3 7",
+            "upSignals": "2 11",
+            "downSignals": "7 0",
+            "usedRails": [
+                {
+                    "x": 2,
+                    "y": 1
+                },
+                {
+                    "x": 3,
+                    "y": 1
+                },
+                {
+                    "x": 3.5,
+                    "y": 1.5
+                },
+                {
+                    "x": 4,
+                    "y": 2
+                },
+                {
+                    "x": 5,
+                    "y": 2
+                },
+                {
+                    "x": 6,
+                    "y": 3
+                },
+                {
+                    "x": 7,
+                    "y": 3
+                }
+            ],
+            "switchStates": {
+                "A": "-",
+                "D": "-",
+                "F": "-"
+            }
+        },
+        {
+            "upSignals": "3 8",
             "downSignals": "4 1",
             "usedRails": [
                 {
@@ -428,7 +468,7 @@
             }
         },
         {
-            "upSignals": "3 8",
+            "upSignals": "3 9",
             "downSignals": "5 1",
             "usedRails": [
                 {
@@ -467,7 +507,7 @@
             }
         },
         {
-            "upSignals": "3 9",
+            "upSignals": "3 10",
             "downSignals": "6 1",
             "usedRails": [
                 {
@@ -497,12 +537,48 @@
             ],
             "switchStates": {
                 "B": "+",
-                "D": "+"
+                "D": "+",
+                "F": "+"
             }
         },
         {
-            "upSignals": "7 12",
-            "downSignals": "10 4",
+            "upSignals": "3 11",
+            "downSignals": "7 1",
+            "usedRails": [
+                {
+                    "x": 2,
+                    "y": 2
+                },
+                {
+                    "x": 3,
+                    "y": 2
+                },
+                {
+                    "x": 4,
+                    "y": 2
+                },
+                {
+                    "x": 5,
+                    "y": 2
+                },
+                {
+                    "x": 6,
+                    "y": 3
+                },
+                {
+                    "x": 7,
+                    "y": 3
+                }
+            ],
+            "switchStates": {
+                "B": "+",
+                "D": "+",
+                "F": "-"
+            }
+        },
+        {
+            "upSignals": "8 14",
+            "downSignals": "12 4",
             "usedRails": [
                 {
                     "x": 8,
@@ -526,72 +602,73 @@
                 }
             ],
             "switchStates": {
-                "G": "-"
-            }
-        },
-        {
-            "upSignals": "8 12",
-            "downSignals": "10 5",
-            "usedRails": [
-                {
-                    "x": 8,
-                    "y": 1
-                },
-                {
-                    "x": 9,
-                    "y": 1
-                },
-                {
-                    "x": 10,
-                    "y": 1
-                },
-                {
-                    "x": 11,
-                    "y": 1
-                },
-                {
-                    "x": 12,
-                    "y": 1
-                }
-            ],
-            "switchStates": {
-                "F": "+",
-                "G": "+"
-            }
-        },
-        {
-            "upSignals": "8 13",
-            "downSignals": "11 5",
-            "usedRails": [
-                {
-                    "x": 8,
-                    "y": 1
-                },
-                {
-                    "x": 9,
-                    "y": 2
-                },
-                {
-                    "x": 10,
-                    "y": 2
-                },
-                {
-                    "x": 11,
-                    "y": 3
-                },
-                {
-                    "x": 12,
-                    "y": 3
-                }
-            ],
-            "switchStates": {
-                "F": "-",
                 "H": "-"
             }
         },
         {
-            "upSignals": "9 13",
-            "downSignals": "11 6",
+            "upSignals": "9 14",
+            "downSignals": "12 5",
+            "usedRails": [
+                {
+                    "x": 8,
+                    "y": 1
+                },
+                {
+                    "x": 9,
+                    "y": 1
+                },
+                {
+                    "x": 10,
+                    "y": 1
+                },
+                {
+                    "x": 11,
+                    "y": 1
+                },
+                {
+                    "x": 12,
+                    "y": 1
+                }
+            ],
+            "switchStates": {
+                "G": "+",
+                "H": "+"
+            }
+        },
+        {
+            "upSignals": "9 15",
+            "downSignals": "13 5",
+            "usedRails": [
+                {
+                    "x": 8,
+                    "y": 1
+                },
+                {
+                    "x": 9,
+                    "y": 2
+                },
+                {
+                    "x": 10,
+                    "y": 2
+                },
+                {
+                    "x": 11,
+                    "y": 3
+                },
+                {
+                    "x": 12,
+                    "y": 3
+                }
+            ],
+            "switchStates": {
+                "G": "-",
+                "I": "-",
+                "J": "-"
+            }
+        },
+        {
+            "upSignals": "10 15",
+            "downSignals": "13 6",
             "usedRails": [
                 {
                     "x": 8,
@@ -615,7 +692,37 @@
                 }
             ],
             "switchStates": {
-                "H": "+"
+                "I": "+",
+                "J": "-"
+            }
+        },
+        {
+            "upSignals": "11 15",
+            "downSignals": "13 7",
+            "usedRails": [
+                {
+                    "x": 8,
+                    "y": 3
+                },
+                {
+                    "x": 9,
+                    "y": 3
+                },
+                {
+                    "x": 10,
+                    "y": 3
+                },
+                {
+                    "x": 11,
+                    "y": 3
+                },
+                {
+                    "x": 12,
+                    "y": 3
+                }
+            ],
+            "switchStates": {
+                "J": "+"
             }
         }
     ]

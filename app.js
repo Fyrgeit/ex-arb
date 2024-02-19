@@ -6,7 +6,8 @@ data.switches = data.rails.filter(rail => rail.switchIndex);
 for (const key in data.routes) {
     let route = data.routes[key];
 
-    route.put = false;
+    route.upPut = false;
+    route.downPut = false;
 }
 
 const canvas = document.getElementById("canvas");
@@ -216,13 +217,15 @@ function refreshTable() {
 
     const obstructedRails = [].concat(
         ...Object.values(data.routes)
-            .filter(route => route.put)
+            .filter(route => route.upPut || route.downPut)
             .map(route => route.usedRails)
     );
 
     data.routes.forEach((route, routeIndex) => {
-        const rowEl = document.createElement("tr");
-        tableEl.append(rowEl);
+        const topRowEl = document.createElement("tr");
+        const bottomRowEl = document.createElement("tr");
+        tableEl.append(topRowEl);
+        tableEl.append(bottomRowEl);
 
         let columns = data.switches.map(s => ({
             requestedSwitchState: route.switchStates[s.switchIndex],
@@ -233,46 +236,74 @@ function refreshTable() {
         const switchesCorrect = isSwitchesCorrect(columns);
         const routeObstructed = isRouteObstructed(route, obstructedRails);
 
-        rowEl.innerHTML = `
-            <td>${route.upSignals + " / " + route.downSignals}</td>
-            <td></td>
-            <td>${columns.map(c => switchSymbols[c.requestedSwitchState]).join("</td><td>")}</td>
-            <td>${switchesCorrect ? "🟢" : "🔴"}</td>
-            <td>${routeObstructed ? "🔴" : "🟢"}</td>
+        topRowEl.innerHTML = `
+            <td>${route.upSignals}</td>
+            <td rowspan="2"></td>
+            <td rowspan="2">${columns.map(c => switchSymbols[c.requestedSwitchState]).join('</td><td rowspan="2">')}</td>
+            <td rowspan="2">${switchesCorrect ? "🟢" : "🔴"}</td>
+            <td rowspan="2">${routeObstructed ? "🔴" : "🟢"}</td>
         `;
 
-        const checkEl = document.createElement("input");
-        checkEl.setAttribute("type", "checkbox");
-        checkEl.setAttribute("id", routeIndex);
-        checkEl.checked = route.put;
+        bottomRowEl.innerHTML = `
+            <td>${route.downSignals}</td>
+        `;
 
-        if (!switchesCorrect || routeObstructed && !route.put) {
-            checkEl.setAttribute("disabled", "");
+        const topCheckEl = document.createElement("input");
+        const bottomCheckEl = document.createElement("input");
+        topCheckEl.setAttribute("type", "checkbox");
+        bottomCheckEl.setAttribute("type", "checkbox");
+        topCheckEl.setAttribute("id", route.upSignals);
+        bottomCheckEl.setAttribute("id", route.downSignals);
+        topCheckEl.checked = route.upPut;
+        bottomCheckEl.checked = route.downPut;
+
+        if (!switchesCorrect || routeObstructed) {
+            topCheckEl.setAttribute("disabled", "");
+            bottomCheckEl.setAttribute("disabled", "");
         }
 
         //When checkbox is checked or unchecked
-        checkEl.onchange = (e) => {
-            //Lock all switches
-            for (const switchToLock in data.routes[e.target.id].switchStates) {
-                data.switches.find(s => s.switchIndex === switchToLock).locked = e.target.checked;
-            }
+        topCheckEl.onchange = (e) => onPut(e, "up");
+        bottomCheckEl.onchange = (e) => onPut(e, "down");
 
-            //Set put value
-            data.routes[e.target.id].put = e.target.checked;
-
-            //If putting route
-            if (e.target.checked) {
-                data.signals[data.routes[e.target.id].upSignals.split(" ")[0]].state = "green";
-            }
-
-            refreshDisplay();
-            refreshTable();
-        };
-
-        const tdEl = document.createElement("td");
-        tdEl.append(checkEl);
-        rowEl.append(tdEl);
+        const topTdEl = document.createElement("td");
+        const bottomTdEl = document.createElement("td");
+        topTdEl.append(topCheckEl);
+        bottomTdEl.append(bottomCheckEl);
+        topRowEl.append(topTdEl);
+        bottomRowEl.append(bottomTdEl);
     });
+}
+
+function onPut(e, dir) {
+    const routeIndex = data.routes.findIndex(r => r.upSignals == e.target.id || r.downSignals == e.target.id);
+    console.log(routeIndex)
+    const checked = e.target.checked;
+
+    //Lock all switches
+    for (const switchToLock in data.routes[routeIndex].switchStates) {
+        data.switches.find(s => s.switchIndex === switchToLock).locked = checked;
+    }
+
+    if (dir == "up") {
+        data.routes[routeIndex].upPut = checked;
+        console.log(data.routes[routeIndex].upPut)
+
+        if (checked) {
+            data.signals[data.routes[routeIndex].upSignals.split(" ")[0]].state = "green";
+        }
+    }
+
+    if (dir == "down") {
+        data.routes[routeIndex].downPut = checked;
+
+        if (checked) {
+            data.signals[data.routes[routeIndex].downSignals.split(" ")[0]].state = "green";
+        }
+    }
+    
+    refreshDisplay();
+    refreshTable();
 }
 
 function isRouteObstructed(route, obstructedRails) {
@@ -295,6 +326,11 @@ function isSwitchesCorrect(columns) {
 }
 
 function movePlayer(dir) {
+    if (selectedTrainIndex < 0) {
+        console.error("No player chosen");
+        return;
+    }
+
     let playerPos = trains[selectedTrainIndex].pos;
 
     if (!["up", "down"].includes(dir)) {
@@ -340,6 +376,7 @@ function movePlayer(dir) {
         default: break;
     }
 
+    //Passed signals that are green will be turned red again
     let toSignal = data.signals.find(s => s.x === playerPos.x && s.y === playerPos.y);
 
     if (toSignal) {
@@ -364,6 +401,35 @@ function movePlayer(dir) {
                 break;
             default: break;
         }
+    }
+
+    //Routes will be unput when you exit them
+    let fromSignalIndex = data.signals.findIndex(s => s.x === ogPlayerPos.x && s.y === ogPlayerPos.y);
+
+    if (fromSignalIndex != -1) {
+        if (dir == "up" && data.signals[fromSignalIndex].type == "down") {
+            data.routes.filter(p => p.downSignals.split(" ")[0] == fromSignalIndex.toString()).forEach(r => {
+                r.upPut = false;
+                
+                //Unlock switches
+                for (const switchToLock in r.switchStates) {
+                    data.switches.find(s => s.switchIndex === switchToLock).locked = false;
+                }
+            });
+        }
+
+        if (dir == "down" && data.signals[fromSignalIndex].type == "up") {
+            data.routes.filter(p => p.upSignals.split(" ")[0] == fromSignalIndex.toString()).forEach(r => {
+                r.downPut = false;
+
+                //Unlock switches
+                for (const switchToLock in r.switchStates) {
+                    data.switches.find(s => s.switchIndex === switchToLock).locked = false;
+                }
+            });
+        }
+
+        refreshTable();
     }
 
     trains[selectedTrainIndex].pos = playerPos;
