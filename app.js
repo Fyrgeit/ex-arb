@@ -13,8 +13,8 @@ const templateStrings = [
     "Sl+",
     "Sl-",
 ];
-import jsonData from "./data.json" assert { type: "json" };
-import templates from "./templates.json" assert { type: "json" };
+import jsonData from "./data.json" with { type: "json" };
+import templates from "./templates.json" with { type: "json" };
 let data = jsonData;
 data.switches = data.rails.filter((rail) => rail.switchIndex !== undefined && rail.locked !== undefined);
 for (const route of data.routes) {
@@ -78,17 +78,18 @@ function refreshDisplay() {
             const switchEl = document.createElementNS("http://www.w3.org/2000/svg", "circle");
             canvas.append(switchEl);
             switchEl.classList.add("switch-blob");
-            switchEl.setAttribute("cx", "10" + railObj.x * gridSize);
-            switchEl.setAttribute("cy", "10" + railObj.y * gridSize);
+            switchEl.setAttribute("cx", "" + (10 + railObj.x * gridSize));
+            switchEl.setAttribute("cy", "" + (10 + railObj.y * gridSize));
             switchEl.setAttribute("r", "1.5");
             switchEl.addEventListener("click", () => {
-                if (!railObj.locked) {
-                    if (railObj.template.includes("+")) {
-                        railObj.template = railObj.template.replace("+", "-");
-                    }
-                    else {
-                        railObj.template = railObj.template.replace("-", "+");
-                    }
+                if (railObj.locked) {
+                    return;
+                }
+                if (railObj.template.includes("+")) {
+                    railObj.template = railObj.template.replace("+", "-");
+                }
+                else {
+                    railObj.template = railObj.template.replace("-", "+");
                 }
                 refreshDisplay();
                 refreshTable();
@@ -210,7 +211,7 @@ function refreshTable() {
         <tr>
             <th>State</th>
             <th>${data.switches
-        .map((s) => (s.template.slice(-1) === "+" ? "|" : "/"))
+        .map((s) => s.template.slice(-1))
         .join("</th><th>")}</th>
         </tr>
     `;
@@ -234,7 +235,7 @@ function refreshTable() {
             <td>${route.upSignals}</td>
             <td rowspan="2"></td>
             <td rowspan="2">${columns
-            .map((c) => (c.requestedSwitchState === "+" ? "|" : "/"))
+            .map((c) => c.requestedSwitchState)
             .join('</td><td rowspan="2">')}</td>
             <td rowspan="2">${switchesCorrect ? "🟢" : "🔴"}</td>
             <td rowspan="2">${routeObstructed ? "🔴" : "🟢"}</td>
@@ -250,7 +251,7 @@ function refreshTable() {
         bottomCheckEl.setAttribute("id", route.downSignals);
         topCheckEl.checked = !!route.upPut;
         bottomCheckEl.checked = !!route.downPut;
-        if (!switchesCorrect || routeObstructed) {
+        if (routeObstructed) {
             topCheckEl.setAttribute("disabled", "");
             bottomCheckEl.setAttribute("disabled", "");
         }
@@ -269,16 +270,23 @@ function onPut(e, dir) {
     let target = e.target;
     const routeIndex = data.routes.findIndex((r) => r.upSignals === target.getAttribute("id") ||
         r.downSignals === target.getAttribute("id"));
-    console.log(routeIndex);
-    const checked = target.getAttribute("checked") === "true";
-    //Lock all switches
-    for (const switchToLock in data.routes[routeIndex].switchStates) {
-        data.switches.find((s) => s.switchIndex === switchToLock).locked =
-            checked;
-    }
+    const checked = target.checked;
+    //Set and lock all switches
+    Object.keys(data.routes[routeIndex].switchStates).forEach((key) => {
+        let value = data.routes[routeIndex].switchStates[key];
+        let tempSwitch = data.switches.find((s) => s.switchIndex === key);
+        if (!tempSwitch.template.includes(value)) {
+            if (tempSwitch.template.includes("+")) {
+                tempSwitch.template = tempSwitch.template.replace("+", "-");
+            }
+            else {
+                tempSwitch.template = tempSwitch.template.replace("-", "+");
+            }
+        }
+        tempSwitch.locked = checked;
+    });
     if (dir == "up") {
         data.routes[routeIndex].upPut = checked;
-        console.log(data.routes[routeIndex].upPut);
         if (checked) {
             data.signals[parseInt(data.routes[routeIndex].upSignals.split(" ")[0])].state = "green";
         }
