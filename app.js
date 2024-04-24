@@ -392,10 +392,10 @@ function movePlayer(dir) {
     //Routes will be unput when you exit them
     let fromSignalIndex = data.signals.findIndex((s) => s.x === ogPlayerPos.x && s.y === ogPlayerPos.y);
     if (fromSignalIndex != -1) {
+        console.log("passed signal " + fromSignalIndex);
         if (dir == "up" && data.signals[fromSignalIndex].type == "down") {
             data.routes
-                .filter((p) => p.downSignals.split(" ")[0] ==
-                fromSignalIndex.toString())
+                .filter((p) => p.downSignals.split(" ")[0] === fromSignalIndex.toString())
                 .forEach((r) => {
                 r.upPut = false;
                 //Unlock switches
@@ -405,9 +405,10 @@ function movePlayer(dir) {
             });
         }
         if (dir == "down" && data.signals[fromSignalIndex].type == "up") {
-            data.routes
-                .filter((p) => p.upSignals.split(" ")[0] == fromSignalIndex.toString())
-                .forEach((r) => {
+            const rts = data.routes
+                .filter((p) => p.upSignals.split(" ")[0] === fromSignalIndex.toString());
+            console.log(rts);
+            rts.forEach((r) => {
                 r.downPut = false;
                 //Unlock switches
                 for (const switchToLock in r.switchStates) {

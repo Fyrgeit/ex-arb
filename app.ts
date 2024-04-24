@@ -579,13 +579,13 @@ function movePlayer(dir: "up" | "down") {
         (s) => s.x === ogPlayerPos.x && s.y === ogPlayerPos.y
     );
 
+    
     if (fromSignalIndex != -1) {
+        console.log("passed signal " + fromSignalIndex)
         if (dir == "up" && data.signals[fromSignalIndex].type == "down") {
             data.routes
                 .filter(
-                    (p) =>
-                        p.downSignals.split(" ")[0] ==
-                        fromSignalIndex.toString()
+                    (p) => p.downSignals.split(" ")[0] === fromSignalIndex.toString()
                 )
                 .forEach((r) => {
                     r.upPut = false;
@@ -600,12 +600,13 @@ function movePlayer(dir: "up" | "down") {
         }
 
         if (dir == "down" && data.signals[fromSignalIndex].type == "up") {
-            data.routes
+            const rts = data.routes
                 .filter(
-                    (p) =>
-                        p.upSignals.split(" ")[0] == fromSignalIndex.toString()
+                    (p) => p.upSignals.split(" ")[0] === fromSignalIndex.toString()
                 )
-                .forEach((r) => {
+                console.log(rts)
+
+                rts.forEach((r) => {
                     r.downPut = false;
 
                     //Unlock switches
