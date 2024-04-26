@@ -114,9 +114,12 @@
     ],
     "routes": [
         {
+            "upPut": false,
+            "downPut": false,
             "upSignals": "2 8",
             "downSignals": "4 0",
             "usedRails": [
+                { "x": 1, "y": 1 },
                 { "x": 2, "y": 1 },
                 { "x": 3, "y": 1 },
                 { "x": 4, "y": 1 },
@@ -127,9 +130,12 @@
             "switchStates": { "A": "+", "C": "+", "E": "-" }
         },
         {
+            "upPut": false,
+            "downPut": false,
             "upSignals": "2 9",
             "downSignals": "5 0",
             "usedRails": [
+                { "x": 1, "y": 1 },
                 { "x": 2, "y": 1 },
                 { "x": 3, "y": 1 },
                 { "x": 4, "y": 1 },
@@ -140,9 +146,12 @@
             "switchStates": { "A": "+", "C": "+", "E": "+" }
         },
         {
+            "upPut": false,
+            "downPut": false,
             "upSignals": "2 10",
             "downSignals": "6 0",
             "usedRails": [
+                { "x": 1, "y": 1 },
                 { "x": 2, "y": 1 },
                 { "x": 3, "y": 1 },
                 { "x": 3.5, "y": 1.5 },
@@ -154,9 +163,12 @@
             "switchStates": { "A": "-", "D": "-", "F": "+" }
         },
         {
+            "upPut": false,
+            "downPut": false,
             "upSignals": "2 11",
             "downSignals": "7 0",
             "usedRails": [
+                { "x": 1, "y": 1 },
                 { "x": 2, "y": 1 },
                 { "x": 3, "y": 1 },
                 { "x": 3.5, "y": 1.5 },
@@ -168,9 +180,12 @@
             "switchStates": { "A": "-", "D": "-", "F": "-" }
         },
         {
+            "upPut": false,
+            "downPut": false,
             "upSignals": "3 8",
             "downSignals": "4 1",
             "usedRails": [
+                { "x": 1, "y": 2 },
                 { "x": 2, "y": 2 },
                 { "x": 3, "y": 2 },
                 { "x": 3.5, "y": 1.5 },
@@ -182,9 +197,12 @@
             "switchStates": { "B": "-", "C": "-", "E": "-" }
         },
         {
+            "upPut": false,
+            "downPut": false,
             "upSignals": "3 9",
             "downSignals": "5 1",
             "usedRails": [
+                { "x": 1, "y": 2 },
                 { "x": 2, "y": 2 },
                 { "x": 3, "y": 2 },
                 { "x": 3.5, "y": 1.5 },
@@ -196,9 +214,12 @@
             "switchStates": { "B": "-", "C": "-", "E": "+" }
         },
         {
+            "upPut": false,
+            "downPut": false,
             "upSignals": "3 10",
             "downSignals": "6 1",
             "usedRails": [
+                { "x": 1, "y": 2 },
                 { "x": 2, "y": 2 },
                 { "x": 3, "y": 2 },
                 { "x": 4, "y": 2 },
@@ -209,9 +230,12 @@
             "switchStates": { "B": "+", "D": "+", "F": "+" }
         },
         {
+            "upPut": false,
+            "downPut": false,
             "upSignals": "3 11",
             "downSignals": "7 1",
             "usedRails": [
+                { "x": 1, "y": 2 },
                 { "x": 2, "y": 2 },
                 { "x": 3, "y": 2 },
                 { "x": 4, "y": 2 },
@@ -222,9 +246,12 @@
             "switchStates": { "B": "+", "D": "+", "F": "-" }
         },
         {
+            "upPut": false,
+            "downPut": false,
             "upSignals": "8 14",
             "downSignals": "12 4",
             "usedRails": [
+                { "x": 7, "y": 0 },
                 { "x": 8, "y": 0 },
                 { "x": 9, "y": 1 },
                 { "x": 10, "y": 1 },
@@ -234,9 +261,12 @@
             "switchStates": { "H": "-" }
         },
         {
+            "upPut": false,
+            "downPut": false,
             "upSignals": "9 14",
             "downSignals": "12 5",
             "usedRails": [
+                { "x": 7, "y": 1 },
                 { "x": 8, "y": 1 },
                 { "x": 9, "y": 1 },
                 { "x": 10, "y": 1 },
@@ -246,9 +276,12 @@
             "switchStates": { "G": "+", "H": "+" }
         },
         {
+            "upPut": false,
+            "downPut": false,
             "upSignals": "9 15",
             "downSignals": "13 5",
             "usedRails": [
+                { "x": 7, "y": 1 },
                 { "x": 8, "y": 1 },
                 { "x": 9, "y": 2 },
                 { "x": 10, "y": 2 },
@@ -258,9 +291,12 @@
             "switchStates": { "G": "-", "I": "-", "J": "-" }
         },
         {
+            "upPut": false,
+            "downPut": false,
             "upSignals": "10 15",
             "downSignals": "13 6",
             "usedRails": [
+                { "x": 7, "y": 2 },
                 { "x": 8, "y": 2 },
                 { "x": 9, "y": 2 },
                 { "x": 10, "y": 2 },
@@ -270,9 +306,12 @@
             "switchStates": { "I": "+", "J": "-" }
         },
         {
+            "upPut": false,
+            "downPut": false,
             "upSignals": "11 15",
             "downSignals": "13 7",
             "usedRails": [
+                { "x": 7, "y": 3 },
                 { "x": 8, "y": 3 },
                 { "x": 9, "y": 3 },
                 { "x": 10, "y": 3 },

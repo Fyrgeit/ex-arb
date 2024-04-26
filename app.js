@@ -169,20 +169,25 @@ function refreshDisplay() {
             }
             refreshDisplay();
         });
+        const textEl = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        canvas.append(textEl);
+        textEl.classList.add("text");
+        textEl.innerHTML = "" + index;
+        textEl.setAttribute("x", "" + (train.pos.x * gridSize + 9));
+        textEl.setAttribute("y", "" + (train.pos.y * gridSize + 11.5));
     });
     //Display route
-    /* routeInfoRails.forEach((railPos) => {
-        const rectEl = document.createElementNS(
-            "http://www.w3.org/2000/svg",
-            "rect"
-        );
-        canvas.append(rectEl);
-        rectEl.classList.add("rectangle");
-        rectEl.setAttribute("x", railPos.x * gridSize);
-        rectEl.setAttribute("y", railPos.y * gridSize);
-        rectEl.setAttribute("width", gridSize);
-        rectEl.setAttribute("height", gridSize);
-    }); */
+    data.routes.filter(r => r.downPut || r.upPut).forEach(r => {
+        r.usedRails.forEach((railPos) => {
+            const rectEl = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            canvas.append(rectEl);
+            rectEl.classList.add("rectangle");
+            rectEl.setAttribute("x", railPos.x * gridSize + "");
+            rectEl.setAttribute("y", railPos.y * gridSize + "");
+            rectEl.setAttribute("width", gridSize + "");
+            rectEl.setAttribute("height", gridSize + "");
+        });
+    });
     canvas.setAttribute("viewBox", `0 0 ${maxWidth} ${maxHeight}`);
 }
 function refreshTable() {
