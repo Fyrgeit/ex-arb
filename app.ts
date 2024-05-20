@@ -59,22 +59,15 @@ data.switches = data.rails.filter(
     (rail) => rail.switchIndex !== undefined && rail.locked !== undefined
 );
 
-for (const route of data.routes) {
-    route.upPut = false;
-    route.downPut = false;
-}
-
 const canvas = document.getElementById("canvas")!;
 const gridSize = 20;
 
 let trains = [
     {
         pos: { x: 1, y: 1 },
-        selected: false,
     },
     {
         pos: { x: 12, y: 1 },
-        selected: false,
     },
 ];
 
@@ -256,10 +249,12 @@ function refreshDisplay() {
 
     //Draw trains
     trains.forEach((train, index) => {
+        const selected = selectedTrainIndex === index;
+
         const trainEl = document.createElementNS("http://www.w3.org/2000/svg", "rect");
         canvas.append(trainEl);
         trainEl.classList.add("train");
-        if (train.selected) trainEl.classList.add("selected");
+        if (selected) trainEl.classList.add("selected");
         trainEl.setAttribute("trainIndex", "" + index);
         trainEl.setAttribute("x", "" + (4 + train.pos.x * gridSize));
         trainEl.setAttribute("y", "" + (7 + train.pos.y * gridSize));
@@ -273,13 +268,8 @@ function refreshDisplay() {
 
                 if (selectedTrainIndex === trainIndex) {
                     selectedTrainIndex = -1;
-                    train.selected = false;
                 } else {
-                    if (selectedTrainIndex !== -1) {
-                        trains[selectedTrainIndex].selected = false;
-                    }
                     selectedTrainIndex = trainIndex;
-                    train.selected = true;
                 }
             }
 
@@ -351,7 +341,7 @@ function refreshTable() {
         .map((route) => route.usedRails)
         .flat();
 
-    data.routes.forEach((route, routeIndex) => {
+    data.routes.forEach((route) => {
         const topRowEl = document.createElement("tr");
         const bottomRowEl = document.createElement("tr");
         tableEl.append(topRowEl);
@@ -364,7 +354,8 @@ function refreshTable() {
         }));
 
         const switchesCorrect = isSwitchesCorrect(columns);
-        const routeObstructed = isRouteObstructed(route, obstructedRails);
+        const upRouteObstructed = isRouteObstructed(route.usedRails.slice(1), obstructedRails);
+        const downRouteObstructed = isRouteObstructed(route.usedRails.slice(0, route.usedRails.length - 1), obstructedRails);
 
         topRowEl.innerHTML = `
             <td>${route.upSignals}</td>
@@ -373,11 +364,12 @@ function refreshTable() {
                 .map((c) => c.requestedSwitchState)
                 .join('</td><td rowspan="2">')}</td>
             <td rowspan="2">${switchesCorrect ? "🟢" : "🔴"}</td>
-            <td rowspan="2">${routeObstructed ? "🔴" : "🟢"}</td>
-        `;
-
-        bottomRowEl.innerHTML = `
+            <td>${upRouteObstructed ? "🔴" : "🟢"}</td>
+            `;
+            
+            bottomRowEl.innerHTML = `
             <td>${route.downSignals}</td>
+            <td>${downRouteObstructed ? "🔴" : "🟢"}</td>
         `;
 
         const topCheckEl = document.createElement("input") as HTMLInputElement;
@@ -391,8 +383,10 @@ function refreshTable() {
         topCheckEl.checked = !!route.upPut;
         bottomCheckEl.checked = !!route.downPut;
 
-        if (routeObstructed) {
+        if (upRouteObstructed) {
             topCheckEl.setAttribute("disabled", "");
+        }
+        if (downRouteObstructed) {
             bottomCheckEl.setAttribute("disabled", "");
         }
 
@@ -466,11 +460,11 @@ function onPut(e: Event, dir: "up" | "down") {
     refreshTable();
 }
 
-function isRouteObstructed(route: Route, obstructedRails: Pos[]) {
-    const obstructedRailStrings = obstructedRails.map((rail) =>
-        JSON.stringify(rail)
+function isRouteObstructed(rails: Pos[], obstructedRails: Pos[]) {
+    const obstructedRailStrings = [...obstructedRails, ...trains.map(t => t.pos)].map((pos) =>
+        JSON.stringify(pos)
     );
-    const routeRailStrings = route.usedRails.map((rail) =>
+    const routeRailStrings = rails.map((rail) =>
         JSON.stringify(rail)
     );
 
@@ -611,7 +605,6 @@ function movePlayer(dir: "up" | "down") {
                 .filter(
                     (p) => p.upSignals.split(" ")[0] === fromSignalIndex.toString()
                 )
-                console.log(rts)
 
                 rts.forEach((r) => {
                     r.downPut = false;
