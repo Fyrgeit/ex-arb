@@ -13,7 +13,9 @@ const templateStrings = [
     "Sl+",
     "Sl-",
 ];
+// prettier-ignore
 import jsonData from "./data.json" with { type: "json" };
+// prettier-ignore
 import templates from "./templates.json" with { type: "json" };
 let data = jsonData;
 data.switches = data.rails.filter((rail) => rail.switchIndex !== undefined && rail.locked !== undefined);
@@ -102,7 +104,8 @@ function refreshDisplay() {
         }
     });
     //Draw signals
-    data.signals.forEach((signalObj, index) => {
+    data.signals.forEach((signalObj) => {
+        const dir = signalDir(signalObj);
         const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
         canvas.append(pathEl);
         pathEl.classList.add("signal");
@@ -110,7 +113,7 @@ function refreshDisplay() {
         const typePath = {
             up: "m2 6 l4 4 l-4 4",
             down: "m18 6 l-4 4 l4 4",
-        }[signalObj.type];
+        }[dir];
         pathEl.setAttribute("d", `M${signalObj.x * gridSize} ${signalObj.y * gridSize} ${typePath}`);
         pathEl.addEventListener("click", () => {
             if (signalObj.state === "green") {
@@ -124,12 +127,12 @@ function refreshDisplay() {
         const textEl = document.createElementNS("http://www.w3.org/2000/svg", "text");
         canvas.append(textEl);
         textEl.classList.add("text");
-        textEl.innerHTML = "" + index;
+        textEl.innerHTML = "" + signalObj.id;
         const typeOffset = {
             up: { x: 4, y: 5 },
             down: { x: 16, y: 5 },
-        }[signalObj.type];
-        typeOffset.x -= 1.2 * index.toString().length;
+        }[dir];
+        typeOffset.x -= 1.2 * signalObj.id.toString().length;
         textEl.setAttribute("x", "" + (signalObj.x * gridSize + typeOffset.x));
         textEl.setAttribute("y", "" + (signalObj.y * gridSize + typeOffset.y));
     });
@@ -167,7 +170,9 @@ function refreshDisplay() {
         textEl.setAttribute("y", "" + (train.pos.y * gridSize + 11.5));
     });
     //Display route
-    data.routes.filter(r => r.downPut || r.upPut).forEach(r => {
+    data.routes
+        .filter((r) => r.put !== null)
+        .forEach((r) => {
         r.usedRails.forEach((railPos) => {
             const rectEl = document.createElementNS("http://www.w3.org/2000/svg", "rect");
             canvas.append(rectEl);
@@ -180,22 +185,23 @@ function refreshDisplay() {
     });
     canvas.setAttribute("viewBox", `0 0 ${maxWidth} ${maxHeight}`);
 }
+function signalDir(signal) {
+    return signal.id % 2 === 0 ? "up" : "down";
+}
 function refreshTable() {
     const tableEl = document.querySelector("table");
     tableEl.innerHTML = `
         <tr>
             <th rowspan="4">Route</th>
-            <th colspan="${data.switches.length + 1}">Switches</th>
+            <th colspan="${data.switches.length}">Switches</th>
             <th colspan="3" rowspan="2">Control</th>
         </tr>
         <tr>
-            <th></th>
             <th>${data.switches
         .map((s) => s.switchIndex)
         .join("</th><th>")}</th>
         </tr>
         <tr>
-            <th>Locked</th>
             <th>${data.switches
         .map((s) => (s.locked ? "🔒" : "🆓"))
         .join("</th><th>")}</th>
@@ -204,14 +210,13 @@ function refreshTable() {
             <th rowspan="2">Put</th>
         </tr>
         <tr>
-            <th>State</th>
             <th>${data.switches
         .map((s) => s.template.slice(-1))
         .join("</th><th>")}</th>
         </tr>
     `;
     const obstructedRails = Object.values(data.routes)
-        .filter((route) => route.upPut || route.downPut)
+        .filter((route) => route.put !== null)
         .map((route) => route.usedRails)
         .flat();
     data.routes.forEach((route) => {
@@ -228,26 +233,25 @@ function refreshTable() {
         const upRouteObstructed = isRouteObstructed(route.usedRails.slice(1), obstructedRails);
         const downRouteObstructed = isRouteObstructed(route.usedRails.slice(0, route.usedRails.length - 1), obstructedRails);
         topRowEl.innerHTML = `
-            <td>${route.upSignals}</td>
-            <td rowspan="2"></td>
+            <td>${route.upStartSignal} ⇨ ${route.upEndSignal}</td>
             <td rowspan="2">${columns
             .map((c) => c.requestedSwitchState)
             .join('</td><td rowspan="2">')}</td>
             <td rowspan="2">${switchesCorrect ? "🟢" : "🔴"}</td>
             <td>${upRouteObstructed ? "🔴" : "🟢"}</td>
-            `;
+        `;
         bottomRowEl.innerHTML = `
-            <td>${route.downSignals}</td>
+            <td>${route.downEndSignal} ⇦ ${route.downStartSignal}</td>
             <td>${downRouteObstructed ? "🔴" : "🟢"}</td>
         `;
         const topCheckEl = document.createElement("input");
         const bottomCheckEl = document.createElement("input");
         topCheckEl.setAttribute("type", "checkbox");
         bottomCheckEl.setAttribute("type", "checkbox");
-        topCheckEl.setAttribute("id", route.upSignals);
-        bottomCheckEl.setAttribute("id", route.downSignals);
-        topCheckEl.checked = !!route.upPut;
-        bottomCheckEl.checked = !!route.downPut;
+        topCheckEl.setAttribute("id", route.upStartSignal + " " + route.upEndSignal);
+        bottomCheckEl.setAttribute("id", route.downStartSignal + " " + route.downEndSignal);
+        topCheckEl.checked = route.put === "up";
+        bottomCheckEl.checked = route.put === "down";
         if (upRouteObstructed) {
             topCheckEl.setAttribute("disabled", "");
         }
@@ -267,8 +271,10 @@ function refreshTable() {
 }
 function onPut(e, dir) {
     let target = e.target;
-    const routeIndex = data.routes.findIndex((r) => r.upSignals === target.getAttribute("id") ||
-        r.downSignals === target.getAttribute("id"));
+    const routeIndex = data.routes.findIndex((r) => r.upStartSignal + " " + r.upEndSignal ===
+        target.getAttribute("id") ||
+        r.downStartSignal + " " + r.downEndSignal ===
+            target.getAttribute("id"));
     const checked = target.checked;
     //Set and lock all switches
     Object.keys(data.routes[routeIndex].switchStates).forEach((key) => {
@@ -284,23 +290,23 @@ function onPut(e, dir) {
         }
         tempSwitch.locked = checked;
     });
-    if (dir == "up") {
-        data.routes[routeIndex].upPut = checked;
-        if (checked) {
-            data.signals[parseInt(data.routes[routeIndex].upSignals.split(" ")[0])].state = "green";
-        }
+    if (checked) {
+        data.routes[routeIndex].put = dir;
+        data.signals[dir === "up"
+            ? data.routes[routeIndex].upStartSignal
+            : data.routes[routeIndex].downStartSignal].state = "green";
     }
-    if (dir == "down") {
-        data.routes[routeIndex].downPut = checked;
-        if (checked) {
-            data.signals[parseInt(data.routes[routeIndex].downSignals.split(" ")[0])].state = "green";
-        }
+    else {
+        data.routes[routeIndex].put = null;
     }
     refreshDisplay();
     refreshTable();
 }
 function isRouteObstructed(rails, obstructedRails) {
-    const obstructedRailStrings = [...obstructedRails, ...trains.map(t => t.pos)].map((pos) => JSON.stringify(pos));
+    const obstructedRailStrings = [
+        ...obstructedRails,
+        ...trains.map((t) => t.pos),
+    ].map((pos) => JSON.stringify(pos));
     const routeRailStrings = rails.map((rail) => JSON.stringify(rail));
     return obstructedRailStrings.some((railString) => {
         return routeRailStrings.includes(railString);
@@ -308,10 +314,10 @@ function isRouteObstructed(rails, obstructedRails) {
 }
 function isSwitchesCorrect(columns) {
     return columns.every((c) => {
-        if (c.requestedSwitchState == undefined) {
+        if (c.requestedSwitchState === undefined) {
             return true;
         }
-        return c.requestedSwitchState == c.currentSwitchState;
+        return c.requestedSwitchState === c.currentSwitchState;
     });
 }
 function movePlayer(dir) {
@@ -365,7 +371,7 @@ function movePlayer(dir) {
     if (toSignal) {
         switch (dir) {
             case "up":
-                if (toSignal.type === "up") {
+                if (signalDir(toSignal) === "up") {
                     if (toSignal.state === "red") {
                         playerPos = { ...ogPlayerPos };
                     }
@@ -375,7 +381,7 @@ function movePlayer(dir) {
                 }
                 break;
             case "down":
-                if (toSignal.type === "down") {
+                if (signalDir(toSignal) === "down") {
                     if (toSignal.state === "red") {
                         playerPos = { ...ogPlayerPos };
                     }
@@ -392,22 +398,23 @@ function movePlayer(dir) {
     let fromSignalIndex = data.signals.findIndex((s) => s.x === ogPlayerPos.x && s.y === ogPlayerPos.y);
     if (fromSignalIndex != -1) {
         console.log("passed signal " + fromSignalIndex);
-        if (dir == "up" && data.signals[fromSignalIndex].type == "down") {
+        if (dir === "up" &&
+            signalDir(data.signals[fromSignalIndex]) === "down") {
             data.routes
-                .filter((p) => p.downSignals.split(" ")[0] === fromSignalIndex.toString())
+                .filter((p) => p.downStartSignal === fromSignalIndex)
                 .forEach((r) => {
-                r.upPut = false;
+                r.put = null;
                 //Unlock switches
                 for (const switchToLock in r.switchStates) {
                     data.switches.find((s) => s.switchIndex === switchToLock).locked = false;
                 }
             });
         }
-        if (dir == "down" && data.signals[fromSignalIndex].type == "up") {
-            const rts = data.routes
-                .filter((p) => p.upSignals.split(" ")[0] === fromSignalIndex.toString());
+        if (dir === "down" &&
+            signalDir(data.signals[fromSignalIndex]) === "up") {
+            const rts = data.routes.filter((p) => p.upStartSignal === fromSignalIndex);
             rts.forEach((r) => {
-                r.downPut = false;
+                r.put = null;
                 //Unlock switches
                 for (const switchToLock in r.switchStates) {
                     data.switches.find((s) => s.switchIndex === switchToLock).locked = false;

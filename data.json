@@ -95,29 +95,30 @@
         { "x": 10, "y": 3, "template": "S" }
     ],
     "signals": [
-        { "x": 0, "y": 1, "type": "down", "state": "red" },
-        { "x": 0, "y": 2, "type": "down", "state": "red" },
-        { "x": 2, "y": 1, "type": "up", "state": "red" },
-        { "x": 2, "y": 2, "type": "up", "state": "red" },
-        { "x": 6, "y": 0, "type": "down", "state": "red" },
-        { "x": 6, "y": 1, "type": "down", "state": "red" },
-        { "x": 6, "y": 2, "type": "down", "state": "red" },
-        { "x": 6, "y": 3, "type": "down", "state": "red" },
-        { "x": 8, "y": 0, "type": "up", "state": "red" },
-        { "x": 8, "y": 1, "type": "up", "state": "red" },
-        { "x": 8, "y": 2, "type": "up", "state": "red" },
-        { "x": 8, "y": 3, "type": "up", "state": "red" },
-        { "x": 11, "y": 1, "type": "down", "state": "red" },
-        { "x": 11, "y": 3, "type": "down", "state": "red" },
-        { "x": 13, "y": 1, "type": "up", "state": "red" },
-        { "x": 13, "y": 3, "type": "up", "state": "red" }
+        { "x": 0, "y": 1, "state": "red", "id": 1 },
+        { "x": 0, "y": 2, "state": "red", "id": 3 },
+        { "x": 2, "y": 1, "state": "red", "id": 0 },
+        { "x": 2, "y": 2, "state": "red", "id": 2 },
+        { "x": 6, "y": 0, "state": "red", "id": 5 },
+        { "x": 6, "y": 1, "state": "red", "id": 7 },
+        { "x": 6, "y": 2, "state": "red", "id": 9 },
+        { "x": 6, "y": 3, "state": "red", "id": 11 },
+        { "x": 8, "y": 0, "state": "red", "id": 4 },
+        { "x": 8, "y": 1, "state": "red", "id": 6 },
+        { "x": 8, "y": 2, "state": "red", "id": 8 },
+        { "x": 8, "y": 3, "state": "red", "id": 10 },
+        { "x": 11, "y": 1, "state": "red", "id": 13 },
+        { "x": 11, "y": 3, "state": "red", "id": 15 },
+        { "x": 13, "y": 1, "state": "red", "id": 12 },
+        { "x": 13, "y": 3, "state": "red", "id": 14 }
     ],
     "routes": [
         {
-            "upPut": false,
-            "downPut": false,
-            "upSignals": "2 8",
-            "downSignals": "4 0",
+            "put": null,
+            "upStartSignal": 0,
+            "upEndSignal": 4,
+            "downStartSignal": 5,
+            "downEndSignal": 1,
             "usedRails": [
                 { "x": 1, "y": 1 },
                 { "x": 2, "y": 1 },
@@ -130,10 +131,11 @@
             "switchStates": { "A": "+", "C": "+", "E": "-" }
         },
         {
-            "upPut": false,
-            "downPut": false,
-            "upSignals": "2 9",
-            "downSignals": "5 0",
+            "put": null,
+            "upStartSignal": 0,
+            "upEndSignal": 6,
+            "downStartSignal": 7,
+            "downEndSignal": 1,
             "usedRails": [
                 { "x": 1, "y": 1 },
                 { "x": 2, "y": 1 },
@@ -146,10 +148,11 @@
             "switchStates": { "A": "+", "C": "+", "E": "+" }
         },
         {
-            "upPut": false,
-            "downPut": false,
-            "upSignals": "2 10",
-            "downSignals": "6 0",
+            "put": null,
+            "upStartSignal": 0,
+            "upEndSignal": 8,
+            "downStartSignal": 9,
+            "downEndSignal": 1,
             "usedRails": [
                 { "x": 1, "y": 1 },
                 { "x": 2, "y": 1 },
@@ -163,10 +166,11 @@
             "switchStates": { "A": "-", "D": "-", "F": "+" }
         },
         {
-            "upPut": false,
-            "downPut": false,
-            "upSignals": "2 11",
-            "downSignals": "7 0",
+            "put": null,
+            "upStartSignal": 0,
+            "upEndSignal": 10,
+            "downStartSignal": 11,
+            "downEndSignal": 1,
             "usedRails": [
                 { "x": 1, "y": 1 },
                 { "x": 2, "y": 1 },
@@ -180,10 +184,11 @@
             "switchStates": { "A": "-", "D": "-", "F": "-" }
         },
         {
-            "upPut": false,
-            "downPut": false,
-            "upSignals": "3 8",
-            "downSignals": "4 1",
+            "put": null,
+            "upStartSignal": 2,
+            "upEndSignal": 4,
+            "downStartSignal": 5,
+            "downEndSignal": 3,
             "usedRails": [
                 { "x": 1, "y": 2 },
                 { "x": 2, "y": 2 },
@@ -197,10 +202,11 @@
             "switchStates": { "B": "-", "C": "-", "E": "-" }
         },
         {
-            "upPut": false,
-            "downPut": false,
-            "upSignals": "3 9",
-            "downSignals": "5 1",
+            "put": null,
+            "upStartSignal": 2,
+            "upEndSignal": 6,
+            "downStartSignal": 7,
+            "downEndSignal": 3,
             "usedRails": [
                 { "x": 1, "y": 2 },
                 { "x": 2, "y": 2 },
@@ -214,10 +220,11 @@
             "switchStates": { "B": "-", "C": "-", "E": "+" }
         },
         {
-            "upPut": false,
-            "downPut": false,
-            "upSignals": "3 10",
-            "downSignals": "6 1",
+            "put": null,
+            "upStartSignal": 2,
+            "upEndSignal": 8,
+            "downStartSignal": 9,
+            "downEndSignal": 3,
             "usedRails": [
                 { "x": 1, "y": 2 },
                 { "x": 2, "y": 2 },
@@ -230,10 +237,11 @@
             "switchStates": { "B": "+", "D": "+", "F": "+" }
         },
         {
-            "upPut": false,
-            "downPut": false,
-            "upSignals": "3 11",
-            "downSignals": "7 1",
+            "put": null,
+            "upStartSignal": 2,
+            "upEndSignal": 10,
+            "downStartSignal": 11,
+            "downEndSignal": 3,
             "usedRails": [
                 { "x": 1, "y": 2 },
                 { "x": 2, "y": 2 },
@@ -246,10 +254,11 @@
             "switchStates": { "B": "+", "D": "+", "F": "-" }
         },
         {
-            "upPut": false,
-            "downPut": false,
-            "upSignals": "8 14",
-            "downSignals": "12 4",
+            "put": null,
+            "upStartSignal": 4,
+            "upEndSignal": 12,
+            "downStartSignal": 13,
+            "downEndSignal": 5,
             "usedRails": [
                 { "x": 7, "y": 0 },
                 { "x": 8, "y": 0 },
@@ -261,10 +270,11 @@
             "switchStates": { "H": "-" }
         },
         {
-            "upPut": false,
-            "downPut": false,
-            "upSignals": "9 14",
-            "downSignals": "12 5",
+            "put": null,
+            "upStartSignal": 6,
+            "upEndSignal": 12,
+            "downStartSignal": 13,
+            "downEndSignal": 7,
             "usedRails": [
                 { "x": 7, "y": 1 },
                 { "x": 8, "y": 1 },
@@ -276,10 +286,11 @@
             "switchStates": { "G": "+", "H": "+" }
         },
         {
-            "upPut": false,
-            "downPut": false,
-            "upSignals": "9 15",
-            "downSignals": "13 5",
+            "put": null,
+            "upStartSignal": 6,
+            "upEndSignal": 14,
+            "downStartSignal": 15,
+            "downEndSignal": 7,
             "usedRails": [
                 { "x": 7, "y": 1 },
                 { "x": 8, "y": 1 },
@@ -291,10 +302,11 @@
             "switchStates": { "G": "-", "I": "-", "J": "-" }
         },
         {
-            "upPut": false,
-            "downPut": false,
-            "upSignals": "10 15",
-            "downSignals": "13 6",
+            "put": null,
+            "upStartSignal": 8,
+            "upEndSignal": 14,
+            "downStartSignal": 15,
+            "downEndSignal": 9,
             "usedRails": [
                 { "x": 7, "y": 2 },
                 { "x": 8, "y": 2 },
@@ -306,10 +318,11 @@
             "switchStates": { "I": "+", "J": "-" }
         },
         {
-            "upPut": false,
-            "downPut": false,
-            "upSignals": "11 15",
-            "downSignals": "13 7",
+            "put": null,
+            "upStartSignal": 10,
+            "upEndSignal": 14,
+            "downStartSignal": 15,
+            "downEndSignal": 11,
             "usedRails": [
                 { "x": 7, "y": 3 },
                 { "x": 8, "y": 3 },
