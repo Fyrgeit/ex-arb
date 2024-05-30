@@ -249,7 +249,7 @@ function refreshTable() {
         topCheckEl.setAttribute("type", "checkbox");
         bottomCheckEl.setAttribute("type", "checkbox");
         topCheckEl.setAttribute("id", route.upStartSignal + " " + route.upEndSignal);
-        bottomCheckEl.setAttribute("id", route.downStartSignal + " " + route.downEndSignal);
+        bottomCheckEl.setAttribute("id", route.downEndSignal + " " + route.downStartSignal);
         topCheckEl.checked = route.put === "up";
         bottomCheckEl.checked = route.put === "down";
         if (upRouteObstructed) {
@@ -273,8 +273,11 @@ function onPut(e, dir) {
     let target = e.target;
     const routeIndex = data.routes.findIndex((r) => r.upStartSignal + " " + r.upEndSignal ===
         target.getAttribute("id") ||
-        r.downStartSignal + " " + r.downEndSignal ===
+        r.downEndSignal + " " + r.downStartSignal ===
             target.getAttribute("id"));
+    if (routeIndex === -1) {
+        throw "whack";
+    }
     const checked = target.checked;
     //Set and lock all switches
     Object.keys(data.routes[routeIndex].switchStates).forEach((key) => {
@@ -292,9 +295,10 @@ function onPut(e, dir) {
     });
     if (checked) {
         data.routes[routeIndex].put = dir;
-        data.signals[dir === "up"
+        const signalId = dir === "up"
             ? data.routes[routeIndex].upStartSignal
-            : data.routes[routeIndex].downStartSignal].state = "green";
+            : data.routes[routeIndex].downStartSignal;
+        data.signals.find((s) => s.id === signalId).state = "green";
     }
     else {
         data.routes[routeIndex].put = null;
@@ -395,13 +399,12 @@ function movePlayer(dir) {
         }
     }
     //Routes will be unput when you exit them
-    let fromSignalIndex = data.signals.findIndex((s) => s.x === ogPlayerPos.x && s.y === ogPlayerPos.y);
-    if (fromSignalIndex != -1) {
-        console.log("passed signal " + fromSignalIndex);
-        if (dir === "up" &&
-            signalDir(data.signals[fromSignalIndex]) === "down") {
+    let fromSignal = data.signals.find((s) => s.x === ogPlayerPos.x && s.y === ogPlayerPos.y);
+    if (fromSignal !== undefined) {
+        console.log("passed signal " + fromSignal.id);
+        if (dir === "up" && signalDir(fromSignal) === "down") {
             data.routes
-                .filter((p) => p.downStartSignal === fromSignalIndex)
+                .filter((p) => p.downStartSignal === fromSignal?.id)
                 .forEach((r) => {
                 r.put = null;
                 //Unlock switches
@@ -410,9 +413,8 @@ function movePlayer(dir) {
                 }
             });
         }
-        if (dir === "down" &&
-            signalDir(data.signals[fromSignalIndex]) === "up") {
-            const rts = data.routes.filter((p) => p.upStartSignal === fromSignalIndex);
+        if (dir === "down" && signalDir(fromSignal) === "up") {
+            const rts = data.routes.filter((p) => p.upStartSignal === fromSignal?.id);
             rts.forEach((r) => {
                 r.put = null;
                 //Unlock switches

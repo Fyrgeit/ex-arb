@@ -402,7 +402,7 @@ function refreshTable() {
         );
         bottomCheckEl.setAttribute(
             "id",
-            route.downStartSignal + " " + route.downEndSignal
+            route.downEndSignal + " " + route.downStartSignal
         );
         topCheckEl.checked = route.put === "up";
         bottomCheckEl.checked = route.put === "down";
@@ -433,9 +433,13 @@ function onPut(e: Event, dir: "up" | "down") {
         (r) =>
             r.upStartSignal + " " + r.upEndSignal ===
                 target.getAttribute("id") ||
-            r.downStartSignal + " " + r.downEndSignal ===
+            r.downEndSignal + " " + r.downStartSignal ===
                 target.getAttribute("id")
     );
+
+    if (routeIndex === -1) {
+        throw "whack";
+    }
 
     const checked = target.checked;
 
@@ -465,11 +469,12 @@ function onPut(e: Event, dir: "up" | "down") {
     if (checked) {
         data.routes[routeIndex].put = dir;
 
-        data.signals[
+        const signalId =
             dir === "up"
                 ? data.routes[routeIndex].upStartSignal
-                : data.routes[routeIndex].downStartSignal
-        ].state = "green";
+                : data.routes[routeIndex].downStartSignal;
+
+        data.signals.find((s) => s.id === signalId)!.state = "green";
     } else {
         data.routes[routeIndex].put = null;
     }
@@ -593,18 +598,15 @@ function movePlayer(dir: "up" | "down") {
     }
 
     //Routes will be unput when you exit them
-    let fromSignalIndex = data.signals.findIndex(
+    let fromSignal = data.signals.find(
         (s) => s.x === ogPlayerPos.x && s.y === ogPlayerPos.y
     );
 
-    if (fromSignalIndex != -1) {
-        console.log("passed signal " + fromSignalIndex);
-        if (
-            dir === "up" &&
-            signalDir(data.signals[fromSignalIndex]) === "down"
-        ) {
+    if (fromSignal !== undefined) {
+        console.log("passed signal " + fromSignal.id);
+        if (dir === "up" && signalDir(fromSignal) === "down") {
             data.routes
-                .filter((p) => p.downStartSignal === fromSignalIndex)
+                .filter((p) => p.downStartSignal === fromSignal?.id)
                 .forEach((r) => {
                     r.put = null;
 
@@ -617,12 +619,9 @@ function movePlayer(dir: "up" | "down") {
                 });
         }
 
-        if (
-            dir === "down" &&
-            signalDir(data.signals[fromSignalIndex]) === "up"
-        ) {
+        if (dir === "down" && signalDir(fromSignal) === "up") {
             const rts = data.routes.filter(
-                (p) => p.upStartSignal === fromSignalIndex
+                (p) => p.upStartSignal === fromSignal?.id
             );
 
             rts.forEach((r) => {
